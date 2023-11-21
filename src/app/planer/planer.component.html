@@ -1,0 +1,38 @@
+<div class="planerPageWrapper">
+  <div class="datePickerWrapper d-flex gap-1">
+    <div class="dateFrom d-flex flex-column">
+      <input type="date" [(ngModel)]="dataOd">
+      {{dataOd}}
+    </div>
+    <div class="dateTo d-flex flex-column">
+      <input type="date" [(ngModel)]="dataDo">
+      {{dataDo}}
+    </div>
+    <button (click)="onDateChange()">filtr</button>
+  </div>
+<!--  Date Planer-->
+  <div class="planerWrapper d-flex" cdkDropList (cdkDropListDropped)="changeJobPosition($event)" >
+    <div class="testowanieDrag"
+         (cdkDragStarted)="mousePosition($event)"
+         [style]="{'left': leftPosition +'px', 'top': topPosition + 'px', 'position': 'absolute'}"
+         cdkDrag>x: {{leftPosition}}
+                   y: {{topPosition}}</div>
+    <div class="dayWrapper"
+
+         *ngFor="let day of filtr" >
+
+     {{day.data}}
+      <div class="d-flex h-100">
+
+        <div class="hours" *ngFor="let hour of hours"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{{mousePositionX}}
+{{mousePositionY}}
+
+
+
