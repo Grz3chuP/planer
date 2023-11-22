@@ -4,13 +4,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-left: 100px;
+
 
 }
 
 .planerWrapper {
  width: 100%;
-  height: 120px;
+  height: 100px;
 
 }
 .dayWrapper {
@@ -34,7 +34,7 @@
 }
 .testowanieDrag{
   width: 80px;
-  height: 85px;
+  height: 80px;
   background-color: red;
   position: absolute;
   z-index: 100;
@@ -50,4 +50,10 @@
 
 .planerWrapper:hover::-webkit-scrollbar-thumb {
   background-color: #555;
+}
+.border {
+position: absolute;
+  width: 100%;
+  height: 80px;
+ top:20px;
 }

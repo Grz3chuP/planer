@@ -3,6 +3,8 @@ import {Database_interface} from "../interface/database_interface";
 
 import { CdkDragStart} from "@angular/cdk/drag-drop";
 import {Job_interface} from "../interface/Job_interface";
+import {saveData} from "../firebase";
+import {async} from "rxjs";
 
 
 
@@ -99,8 +101,8 @@ export class PlanerComponent {
   }
 
   ];
-  jobName: any;
-  jobDescription: any;
+  jobName: string ='';
+  jobDescription: string = '';
   jobDate: any;
   jobTime: any;
   jobPositionX: number = 0;
@@ -112,7 +114,7 @@ export class PlanerComponent {
       job_name: 'Zadanie 1',
       job_description: 'Zadanie 1',
       job_Position_X: 700,
-      job_Position_Y: 100
+      job_Position_Y: 0
     }, {
       id: 2 ,
       job_name: 'Zadanie 2',
@@ -131,13 +133,14 @@ export class PlanerComponent {
   }
 
 
-  changeJobPosition() {
-
-    // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
-
+  changeJobPosition(job: Job_interface) {
     this.leftPosition = this.mousePositionX ;
-    this.topPosition = 20;
-    // this.leftPosition = this.leftPosition - (this.leftPosition % 10);
+    // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
+    const thisJob = this.jobList.find((item) => item.id === job.id);
+    const newX = this.leftPosition - (this.leftPosition % 10);
+    thisJob!.job_Position_X = newX;
+
+
     console.log(this.topPosition + ' ' + this.leftPosition);
 
   }
@@ -153,15 +156,19 @@ export class PlanerComponent {
   }
 
   createJob() {
-    this.jobList.push({
+    const newJob: Job_interface = {
       id: this.jobList.length + 1,
       job_name: this.jobName,
       job_description: this.jobDescription,
       job_Position_X: this.jobPositionX,
       job_Position_Y: this.jobPositionY
+    }
+    this.jobList.push(newJob);
+    saveData(newJob).then(() => {
 
-    })
-
+        alert('Zapisano');
+      }
+    );
 
 
   }
