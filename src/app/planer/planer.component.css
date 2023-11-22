@@ -1,16 +1,26 @@
+.planerPageWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 100px;
+
+}
+
 .planerWrapper {
-  overflow: hidden;
-  overflow-x: auto;
+ width: 100%;
   height: 120px;
-  max-width: 100%;
+
 }
 .dayWrapper {
   width: 240px;
-  height: 120px;
+  height: 100px;
   background-color: aliceblue;
   display: flex;
   flex-direction: column;
   border-right: brown solid 1px;
+  box-sizing: border-box;
 
 }
 .hours {

@@ -1,4 +1,4 @@
-<div class="planerPageWrapper">
+<div class="planerPageWrapper position-relative">
   <div class="datePickerWrapper d-flex gap-1">
     <div class="dateFrom d-flex flex-column">
       <input type="date" [(ngModel)]="dataOd">
@@ -11,11 +11,15 @@
     <button (click)="onDateChange()">filtr</button>
   </div>
 <!--  Date Planer-->
-  <div class="planerWrapper d-flex" cdkDropList (cdkDropListDropped)="changeJobPosition($event)" >
+  <div id="planer" class="planerWrapper d-flex "   *ngIf="filtr.length > 0" >
     <div class="testowanieDrag"
-         (cdkDragStarted)="mousePosition($event)"
-         [style]="{'left': leftPosition +'px', 'top': topPosition + 'px', 'position': 'absolute'}"
-         cdkDrag>x: {{leftPosition}}
+
+         *ngFor="let job of jobList"
+         cdkDrag
+
+          (cdkDragEnded)="changeJobPosition()"
+          [style]="{'left:': job.job_Position_X + 'px', 'top': job.job_Position_Y + 'px'}">
+         x: {{leftPosition}}
                    y: {{topPosition}}</div>
     <div class="dayWrapper"
 
@@ -27,6 +31,25 @@
         <div class="hours" *ngFor="let hour of hours"></div>
       </div>
 
+    </div>
+  </div>
+  <div class="createJobWrapper">
+    <div class="createJob">
+      <div class="jobName">
+        <input type="text" [(ngModel)]="jobName">
+      </div>
+      <div class="jobDescription">
+        <input type="text" [(ngModel)]="jobDescription">
+      </div>
+      <div class="jobPositionX">
+        <input type="number" [(ngModel)]="jobPositionX">
+      </div>
+      <div class="jobPositionY">
+        <input type="number" [(ngModel)]="jobPositionY">
+      </div>
+      <div class="jobSubmit">
+        <button (click)="createJob()">Dodaj</button>
+      </div>
     </div>
   </div>
 </div>

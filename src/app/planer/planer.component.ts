@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, ElementRef, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {Database_interface} from "../interface/database_interface";
 
 import { CdkDragStart} from "@angular/cdk/drag-drop";
+import {Job_interface} from "../interface/Job_interface";
 
 
 
@@ -13,10 +14,12 @@ import { CdkDragStart} from "@angular/cdk/drag-drop";
 })
 
 export class PlanerComponent {
+  @ViewChild('planer', { static: true }) planerElement!: ElementRef ;
+  jobList: Job_interface[] = [];
   dataOd: string = '2023-11-05';
   dataDo: string = '2023-11-10';
   hours: number[] =[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-  topPosition: number = 0;
+  topPosition: number = 20;
   leftPosition: number = 0;
   mousePositionX: number = 0;
   mousePositionY: number = 0;
@@ -96,6 +99,28 @@ export class PlanerComponent {
   }
 
   ];
+  jobName: any;
+  jobDescription: any;
+  jobDate: any;
+  jobTime: any;
+  jobPositionX: number = 0;
+  jobPositionY: number = 0;
+
+  constructor(private renderer: Renderer2) {
+   this.jobList = [{
+      id: 1,
+      job_name: 'Zadanie 1',
+      job_description: 'Zadanie 1',
+      job_Position_X: 700,
+      job_Position_Y: 100
+    }, {
+      id: 2 ,
+      job_name: 'Zadanie 2',
+      job_description: 'Zadanie 2',
+      job_Position_X: 0,
+      job_Position_Y: 0
+    }];
+   }
 
   onDateChange() {
     this.filtr = this.dataBase.filter((item) => {
@@ -106,20 +131,38 @@ export class PlanerComponent {
   }
 
 
-  changeJobPosition(pos:any) {
-    console.log(pos);
-    this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
-    this.leftPosition = this.leftPosition - (this.mousePositionX - pos.dropPoint.x) ;
+  changeJobPosition() {
+
+    // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
+
+    this.leftPosition = this.mousePositionX ;
+    this.topPosition = 20;
+    // this.leftPosition = this.leftPosition - (this.leftPosition % 10);
     console.log(this.topPosition + ' ' + this.leftPosition);
 
   }
 
-  mousePosition($event: CdkDragStart) {
-    if ("clientX" in $event.event) {
-      this.mousePositionX = $event.event.clientX;
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: any) {
+    if ("clientX" in event) {
+      this.mousePositionX = event.clientX;
     }
-    if ("clientY" in $event.event) {
-      this.mousePositionY = $event.event.clientY;
+    if ("clientY" in event) {
+      this.mousePositionY = event.clientY;
     }
+  }
+
+  createJob() {
+    this.jobList.push({
+      id: this.jobList.length + 1,
+      job_name: this.jobName,
+      job_description: this.jobDescription,
+      job_Position_X: this.jobPositionX,
+      job_Position_Y: this.jobPositionY
+
+    })
+
+
+
   }
 }
