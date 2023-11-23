@@ -36,9 +36,9 @@ export async function saveData(data: any) {
     }
   );
 }
-export function readData() {
+export async function readData() {
    const query = ref(db, "planer1");
-  get(query).then(snapshot => {
+  await get(query).then(snapshot => {
     if (snapshot.exists()) {
       console.log(snapshot.val());
     } else {
@@ -46,4 +46,14 @@ export function readData() {
     }
   });
 }
+
+onValue(ref(db, 'planer1'), (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    console.log(data);
+
+
+  }
+});
+
 

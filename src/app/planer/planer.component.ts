@@ -3,7 +3,8 @@ import {Database_interface} from "../interface/database_interface";
 import {DateTime, Interval} from "luxon";
 import {CdkDragStart} from "@angular/cdk/drag-drop";
 import {Job_interface} from "../interface/Job_interface";
-import {saveData} from "../firebase";
+import {readData, saveData} from "../firebase";
+import {jobListSignal} from "../store";
 
 
 @Component({
@@ -15,11 +16,11 @@ import {saveData} from "../firebase";
 
 export class PlanerComponent implements AfterViewInit {
   // @ViewChild('test') testDiv!: ElementRef;
-  jobList: Job_interface[] = [];
+  //jobList: Job_interface[] = [];
   jobListFilter: Job_interface[] = [];
   newJobListPos: Job_interface[] = [];
-  dataOd: string = '2023-11-05';
-  dataDo: string = '2023-11-10';
+  dataOd: string = '2023-11-22';
+  dataDo: string = '2023-11-28';
   jobHours: number = 0;
   hours: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
   topPosition: number = 20;
@@ -27,111 +28,19 @@ export class PlanerComponent implements AfterViewInit {
   mousePositionX: number = 0;
   mousePositionY: number = 0;
   elementOffset: { left: number, top: number } = {left: 0, top: 0};
-  filtr: Database_interface[] = [];
   daysInRange: any;
-  dataBase: Database_interface[] = [{
-    name: 'Zadanie 1',
-    data: '2023-11-01',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 2',
-    data: '2023-11-02',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 3',
-    data: '2023-11-03',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 4',
-    data: '2023-11-04',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 5',
-    data: '2023-11-05',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 6',
-    data: '2023-11-06',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 7',
-    data: '2023-11-07',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 8',
-    data: '2023-11-08',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 9',
-    data: '2023-11-09',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 10',
-    data: '2023-11-10',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 11',
-    data: '2023-11-11',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 12',
-    data: '2023-11-12',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 13',
-    data: '2023-11-13',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 14',
-    data: '2023-11-14',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 15',
-    data: '2023-11-15',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 16',
-    data: '2023-11-16',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 17',
-    data: '2023-11-17',
-    status: 'Zrobione'
-  }, {
-    name: 'Zadanie 18',
-    data: '2023-11-18',
-    status: 'Zrobione'
-  }
-
-  ];
   jobName: string = '';
   jobDescription: string = '';
-  jobDate: any;
-  jobTime: any;
   jobPositionX: number = 0;
   jobPositionY: number = 0;
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef) {
-    this.jobList = [{
-      id: 1,
-      job_name: 'Zadanie 1',
-      job_description: 'Zadanie 1',
-      job_date: '2023-11-05',
-      job_hours: 8,
-      begin_time: 17,
-      job_Position_X: 700,
-      job_Position_Y: 0
-    }, {
-      id: 2,
-      job_name: 'Zadanie 2',
-      job_description: 'Zadanie 2',
-      job_date: '2023-11-06',
-      job_hours: 12,
-      begin_time: 8,
-      job_Position_X: 0,
-      job_Position_Y: 0
-    }];
-    this.onDateChange();
+
+    readData().then((data) => {
+      console.log(data);
+      this.onDateChange();
+    });
+
   }
 
   ngAfterViewInit() {
@@ -147,7 +56,7 @@ export class PlanerComponent implements AfterViewInit {
     this.daysInRange = dateInterval.splitBy({days: 1}).map((item) => item.start);
     console.log(this.daysInRange);
     console.log(this.daysInRange[0].toFormat('yyyy-MM-dd'));
-     this.jobListFilter = this.jobList.filter((item) => {
+     this.jobListFilter = jobListSignal().filter((item) => {
       return item.job_date >= this.dataOd && item.job_date <= this.dataDo;
      });
     this.jobListFilter.forEach((item) => {
@@ -255,7 +164,7 @@ export class PlanerComponent implements AfterViewInit {
       job_name: this.jobName,
       job_date: DateTime.now().toFormat('yyyy-MM-dd'),
       job_hours: this.jobHours,
-      begin_time: 0,
+      begin_time: 1,
       job_description: this.jobDescription,
       job_Position_X: this.jobPositionX,
       job_Position_Y: this.jobPositionY
