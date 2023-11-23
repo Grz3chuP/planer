@@ -1,5 +1,5 @@
 export interface Job_interface {
-  id: number;
+  id: string;
   job_name: string;
   job_description: string;
   job_date: string;

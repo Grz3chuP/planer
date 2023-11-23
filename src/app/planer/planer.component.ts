@@ -16,7 +16,7 @@ import {jobListSignal} from "../store";
 
 export class PlanerComponent implements AfterViewInit {
   // @ViewChild('test') testDiv!: ElementRef;
-  //jobList: Job_interface[] = [];
+  jobList: Job_interface[] = [];
   jobListFilter: Job_interface[] = [];
   newJobListPos: Job_interface[] = [];
   dataOd: string = '2023-11-22';
@@ -36,8 +36,17 @@ export class PlanerComponent implements AfterViewInit {
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef) {
 
-    readData().then((data) => {
+    readData().then((data: Job_interface | void) => {
+      if (data) {
+        Object.values(data).forEach((item: Job_interface) => {
+          jobListSignal().push(item);
+          console.log('itemy z bazy danych' + item);
+        });
+
+      }
       console.log(data);
+
+     // jobListSignal().push(data);
       this.onDateChange();
     });
 
@@ -94,11 +103,11 @@ export class PlanerComponent implements AfterViewInit {
     const element = event.target as HTMLElement;
     this.leftPosition = event.x - this.elementOffset.left;
     // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
-    const thisJob = this.jobList.find((item) => item.id === job.id);
+    const thisJob = jobListSignal().find((item) => item.id === job.id);
     const newX = this.leftPosition - (this.leftPosition % 10);
     console.log('newX' + newX);
     const newJobListPos: Job_interface[] = [];
-    this.jobList.forEach(item => {
+   jobListSignal().forEach(item => {
       if (item.id !== thisJob!.id) {
         if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
           newJobListPos.push(item);
@@ -160,7 +169,7 @@ export class PlanerComponent implements AfterViewInit {
 
   createJob() {
     const newJob: Job_interface = {
-      id: this.jobList.length + 1,
+      id: '',
       job_name: this.jobName,
       job_date: DateTime.now().toFormat('yyyy-MM-dd'),
       job_hours: this.jobHours,
@@ -169,7 +178,7 @@ export class PlanerComponent implements AfterViewInit {
       job_Position_X: this.jobPositionX,
       job_Position_Y: this.jobPositionY
     }
-    this.jobList.push(newJob);
+    jobListSignal().push(newJob);
     saveData(newJob).then(() => {
 
         alert('Zapisano');
@@ -191,4 +200,6 @@ export class PlanerComponent implements AfterViewInit {
     element.style.opacity = '0.5';
     element.style.boxShadow = '0 0 5px 5px #000000';
   }
+
+  protected readonly jobListSignal = jobListSignal;
 }

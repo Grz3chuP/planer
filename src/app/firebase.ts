@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 
 import { getDatabase, ref, set, onValue, get, remove,push } from "firebase/database";
+import {Job_interface} from "./interface/Job_interface";
+import {jobListSignal} from "./store";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -25,21 +27,33 @@ const db = getDatabase(app);
 
 const docRef = ref(db, "planer1");
 
-export async function saveData(data: any) {
-  const newDocRef =push(ref(db, "planer1"));
-   await set(newDocRef, data).then(
-    () => {
+export async function saveData(data: Job_interface) {
+  const newDocRef= push(ref(db, "planer1"));
+
+  try {
+    await set(newDocRef, data);
+    const key = newDocRef.key;
+    if (key) {
+      await set(ref(db, "planer1/" + key + "/id"), key);
       console.log("success");
-    },
-    (error: any) => {
-      console.log("error");
+      return key;
+    } else {
+      console.error('Failed to get the key from Firebase.');
+      return null;
     }
-  );
+  } catch (error: any) {
+      console.log("error");
+      return null;
+    }
 }
 export async function readData() {
    const query = ref(db, "planer1");
   await get(query).then(snapshot => {
     if (snapshot.exists()) {
+      Object.values(snapshot.val()).forEach((item: any) => {
+        jobListSignal().push(item);
+        console.log('itemy z bazy danych' + item);
+      });
       console.log(snapshot.val());
     } else {
       console.log("No data available");
