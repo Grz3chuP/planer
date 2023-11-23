@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, ElementRef, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {Database_interface} from "../interface/database_interface";
-
+import {DateTime} from "luxon";
 import { CdkDragStart} from "@angular/cdk/drag-drop";
 import {Job_interface} from "../interface/Job_interface";
 import {saveData} from "../firebase";
-import {async} from "rxjs";
+
 
 
 
@@ -18,8 +18,11 @@ import {async} from "rxjs";
 export class PlanerComponent implements AfterViewInit{
   // @ViewChild('test') testDiv!: ElementRef;
   jobList: Job_interface[] = [];
+  jobListFilter: Job_interface[] = [];
+  newJobListPos: Job_interface[] = [];
   dataOd: string = '2023-11-05';
   dataDo: string = '2023-11-10';
+  jobHours: number = 0;
   hours: number[] =[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
   topPosition: number = 20;
   leftPosition: number = 0;
@@ -114,12 +117,18 @@ export class PlanerComponent implements AfterViewInit{
       id: 1,
       job_name: 'Zadanie 1',
       job_description: 'Zadanie 1',
+     job_date: '2023-11-05',
+      job_hours: 8,
+      begin_time: 17,
       job_Position_X: 700,
       job_Position_Y: 0
     }, {
       id: 2 ,
       job_name: 'Zadanie 2',
       job_description: 'Zadanie 2',
+      job_date: '2023-11-06',
+      job_hours: 12,
+      begin_time: 8,
       job_Position_X: 0,
       job_Position_Y: 0
     }];
@@ -131,22 +140,58 @@ ngAfterViewInit() {
   onDateChange() {
     this.filtr = this.dataBase.filter((item) => {
       return item.data >= this.dataOd && item.data <= this.dataDo;
+    });
+    this.jobListFilter = this.jobList.filter((item) => {
+      return item.job_date >= this.dataOd && item.job_date <= this.dataDo;
+    });
+    this.jobListFilter.forEach((item) => {
+      item.job_Position_X = 10 * item.begin_time + ((this.daysDifference(this.dataOd, item.job_date))! * 240) ;
 
     });
-
+  }
+  //obliczam roznicę w dniach miedzy datami
+  daysDifference(date1: string, date2: string) {
+    const date1Obj = DateTime.fromISO(date1);
+    const date2Obj = DateTime.fromISO(date2);
+    const diff = date1Obj.diff(date2Obj, ['days']).toObject();
+    console.log(diff.days);
+    return Math.abs(diff.days!);
   }
 
-
   changeJobPosition(job: Job_interface, event: any) {
-    console.log(event );
+
     const element = event.target as HTMLElement;
     this.leftPosition = event.x - this.elementOffset.left;
     // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
     const thisJob = this.jobList.find((item) => item.id === job.id);
     const newX = this.leftPosition - (this.leftPosition % 10);
-    thisJob!.job_Position_X = newX;
-    element.style.opacity = '1';
-    element.style.boxShadow = 'none';
+    console.log('newX' + newX);
+    const newJobListPos: Job_interface[] = [];
+     this.jobList.forEach(item => {
+       if(item.id !== thisJob!.id) {
+         if (item.job_Position_X <= newX + 79 && item.job_Position_X + 79 >= newX) {
+           newJobListPos.push(item);
+           console.log('newJobListPos' + newJobListPos.length);
+
+
+
+         }
+       }
+
+
+    });
+
+
+     if(newJobListPos.length === 0) {
+       thisJob!.job_Position_X = newX;
+       element.style.opacity = '1';
+       element.style.boxShadow = 'none';
+     } else {
+    //
+         element.style.opacity = '1';
+        element.style.boxShadow = 'none';
+    //
+     }
 
     console.log(this.topPosition + ' ' + this.leftPosition);
 
@@ -176,6 +221,7 @@ ngAfterViewInit() {
     }
   }
   // tu ustawiam offset dla elementu ktory chce przesunac wzgledem pozycji myszki
+
   getOffset(el: any) {
     const element = el.target as HTMLElement;
     const rect = element.getBoundingClientRect();
@@ -192,6 +238,9 @@ ngAfterViewInit() {
     const newJob: Job_interface = {
       id: this.jobList.length + 1,
       job_name: this.jobName,
+      job_date:  DateTime.now().toFormat('yyyy-MM-dd'),
+      job_hours: this.jobHours,
+      begin_time: 0,
       job_description: this.jobDescription,
       job_Position_X: this.jobPositionX,
       job_Position_Y: this.jobPositionY

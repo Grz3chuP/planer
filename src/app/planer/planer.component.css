@@ -39,6 +39,8 @@
   position: absolute;
   z-index: 100;
   transition: 0.3s ease-out;
+  border: #555555 solid 1px;
+  border-radius: 5px;
 }
 
 

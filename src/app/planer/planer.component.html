@@ -10,28 +10,33 @@
     </div>
     <button (click)="onDateChange()">filtr</button>
   </div>
-<!--  Date Planer-->
+  <!--  Date Planer-->
   <div id="planer"
        class="planerWrapper d-flex position-relative">
     <div class="border">
       <div class="jobElement"
            id="test"
            [dndDraggable]=""
-           *ngFor="let job of jobList"
+           *ngFor="let job of jobListFilter"
            (dndStart)="changeStyle($event)"
            (dndEnd)="changeJobPosition(job, $event)"
            (mousemove)="getOffset($event)"
 
            [style]="{'left': job.job_Position_X + 'px', 'top': job.job_Position_Y + 'px', 'transform': 'translate3d(0,-1px, 0)'}">
         x: {{job.job_Position_X}}
-        y: {{job.job_Position_Y}}</div>
+        y: {{job.job_Position_Y}}
+        {{job.job_name}}
+        {{job.job_date}}
+        {{job.job_hours}}
+        {{job.begin_time}}
+
+      </div>
     </div>
 
 
-
     <div class="dayWrapper"
-         *ngFor="let day of filtr" >
-     {{day.data}}
+         *ngFor="let day of filtr">
+      {{day.data}}
       <div class="d-flex h-100">
 
         <div class="hours" *ngFor="let hour of hours"></div>
@@ -42,17 +47,29 @@
   <div class="createJobWrapper">
     <div class="createJob">
       <div class="jobName">
-        <input type="text" [(ngModel)]="jobName">
+        <input type="text"
+               placeholder="Nazwa"
+               [(ngModel)]="jobName">
       </div>
       <div class="jobDescription">
-        <input type="text" [(ngModel)]="jobDescription">
+        <input type="text"
+               placeholder="Opis"
+               [(ngModel)]="jobDescription">
       </div>
-      <div class="jobPositionX">
-        <input type="number" [(ngModel)]="jobPositionX">
+      <label for="jobHours">Ilość godzin
+      <div class="hoursNumber">
+        <input type="number"
+               id="jobHours"
+               placeholder="Ilość godzin"
+               [(ngModel)]="jobHours">
       </div>
-      <div class="jobPositionY">
-        <input type="number" [(ngModel)]="jobPositionY">
-      </div>
+        </label>
+<!--      <div class="jobPositionX">-->
+<!--        <input type="number" [(ngModel)]="jobPositionX">-->
+<!--      </div>-->
+<!--      <div class="jobPositionY">-->
+<!--        <input type="number" [(ngModel)]="jobPositionY">-->
+<!--      </div>-->
       <div class="jobSubmit">
         <button (click)="createJob()">Dodaj</button>
       </div>
@@ -62,6 +79,9 @@
 
 {{mousePositionX}}
 {{mousePositionY}}
+{{jobList | json}}
+{{newJobListPos | json}}
+
 
 
 
