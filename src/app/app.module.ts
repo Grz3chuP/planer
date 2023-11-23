@@ -10,6 +10,7 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule} from "@angular/forms";
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
+import {DndDraggableDirective} from "ngx-drag-drop";
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
     FormsModule,
     CdkDrag,
     CdkDropList,
+    DndDraggableDirective,
 
   ],
   providers: [],

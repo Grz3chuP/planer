@@ -27,18 +27,22 @@
   width: 10px;
   height: 100%;
   border-left: 1px solid black;
-  box-sizing: border-box;
+  box-sizing: content-box;
 }
 .hours:first-child {
   border-left: none;
 }
-.testowanieDrag{
+.jobElement{
   width: 80px;
   height: 80px;
   background-color: red;
   position: absolute;
   z-index: 100;
+  transition: 0.3s ease-out;
 }
+
+
+
 .planerWrapper::-webkit-scrollbar {
   width: 10px;
   background-color: aliceblue;

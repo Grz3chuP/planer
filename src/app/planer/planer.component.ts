@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Renderer2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {Database_interface} from "../interface/database_interface";
 
 import { CdkDragStart} from "@angular/cdk/drag-drop";
@@ -15,8 +15,8 @@ import {async} from "rxjs";
 
 })
 
-export class PlanerComponent {
-  @ViewChild('planer', { static: true }) planerElement!: ElementRef ;
+export class PlanerComponent implements AfterViewInit{
+  // @ViewChild('test') testDiv!: ElementRef;
   jobList: Job_interface[] = [];
   dataOd: string = '2023-11-05';
   dataDo: string = '2023-11-10';
@@ -25,6 +25,7 @@ export class PlanerComponent {
   leftPosition: number = 0;
   mousePositionX: number = 0;
   mousePositionY: number = 0;
+  elementOffset: {left:number,top:number } = {left:0,top:0};
   filtr: Database_interface[] = [];
   dataBase: Database_interface[] = [{
     name: 'Zadanie 1',
@@ -108,7 +109,7 @@ export class PlanerComponent {
   jobPositionX: number = 0;
   jobPositionY: number = 0;
 
-  constructor(private renderer: Renderer2) {
+  constructor(private renderer: Renderer2, private elementRef: ElementRef) {
    this.jobList = [{
       id: 1,
       job_name: 'Zadanie 1',
@@ -122,8 +123,11 @@ export class PlanerComponent {
       job_Position_X: 0,
       job_Position_Y: 0
     }];
+   this.onDateChange();
    }
+ngAfterViewInit() {
 
+}
   onDateChange() {
     this.filtr = this.dataBase.filter((item) => {
       return item.data >= this.dataOd && item.data <= this.dataDo;
@@ -133,18 +137,35 @@ export class PlanerComponent {
   }
 
 
-  changeJobPosition(job: Job_interface) {
-    this.leftPosition = this.mousePositionX ;
+  changeJobPosition(job: Job_interface, event: any) {
+    console.log(event );
+    const element = event.target as HTMLElement;
+    this.leftPosition = event.x - this.elementOffset.left;
     // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
     const thisJob = this.jobList.find((item) => item.id === job.id);
     const newX = this.leftPosition - (this.leftPosition % 10);
     thisJob!.job_Position_X = newX;
-
+    element.style.opacity = '1';
+    element.style.boxShadow = 'none';
 
     console.log(this.topPosition + ' ' + this.leftPosition);
 
   }
 
+  // @HostListener('mousedown', ['$event'])
+  // onMouseDown(event: any) {
+  // const element = event.target as HTMLElement;
+  // element.style.opacity = '0.5';
+  //
+  // }
+
+
+
+
+
+
+
+  // tu pobiera pozycje myszki
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: any) {
     if ("clientX" in event) {
@@ -153,6 +174,18 @@ export class PlanerComponent {
     if ("clientY" in event) {
       this.mousePositionY = event.clientY;
     }
+  }
+  // tu ustawiam offset dla elementu ktory chce przesunac wzgledem pozycji myszki
+  getOffset(el: any) {
+    const element = el.target as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    this.elementOffset = {
+      left: this.mousePositionX - rect.left,
+      top: this.mousePositionY - rect.top
+
+    };
+
+
   }
 
   createJob() {
@@ -171,5 +204,18 @@ export class PlanerComponent {
     );
 
 
+  }
+
+  animationClear(event: any) {
+    const element = event.target as HTMLElement;
+    console.log(element);
+    element.style.opacity = '1';
+
+  }
+
+  changeStyle($event: DragEvent) {
+    const element = $event.target as HTMLElement;
+    element.style.opacity = '0.5';
+    element.style.boxShadow = '0 0 5px 5px #000000';
   }
 }

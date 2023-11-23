@@ -12,19 +12,22 @@
   </div>
 <!--  Date Planer-->
   <div id="planer"
-       *ngIf="filtr.length > 0"
        class="planerWrapper d-flex position-relative">
     <div class="border">
-      <div class="testowanieDrag"
-           cdkDragBoundary=".border"
+      <div class="jobElement"
+           id="test"
+           [dndDraggable]=""
            *ngFor="let job of jobList"
-           cdkDrag
+           (dndStart)="changeStyle($event)"
+           (dndEnd)="changeJobPosition(job, $event)"
+           (mousemove)="getOffset($event)"
 
-           (cdkDragEnded)="changeJobPosition(job)"
            [style]="{'left': job.job_Position_X + 'px', 'top': job.job_Position_Y + 'px', 'transform': 'translate3d(0,-1px, 0)'}">
         x: {{job.job_Position_X}}
         y: {{job.job_Position_Y}}</div>
     </div>
+
+
 
     <div class="dayWrapper"
          *ngFor="let day of filtr" >
