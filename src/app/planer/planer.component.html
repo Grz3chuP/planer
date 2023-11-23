@@ -22,7 +22,10 @@
            (dndEnd)="changeJobPosition(job, $event)"
            (mousemove)="getOffset($event)"
 
-           [style]="{'left': job.job_Position_X + 'px', 'top': job.job_Position_Y + 'px', 'transform': 'translate3d(0,-1px, 0)'}">
+           [style]="{'left': job.job_Position_X + 'px',
+            'top': job.job_Position_Y + 'px',
+             'transform': 'translate3d(0,-1px, 0)',
+              'width': job.job_hours * 10 + 'px'}">
         x: {{job.job_Position_X}}
         y: {{job.job_Position_Y}}
         {{job.job_name}}
@@ -35,8 +38,8 @@
 
 
     <div class="dayWrapper"
-         *ngFor="let day of filtr">
-      {{day.data}}
+         *ngFor="let day of daysInRange; let i = index">
+      {{day | date: 'dd-MM-yyyy'}}
       <div class="d-flex h-100">
 
         <div class="hours" *ngFor="let hour of hours"></div>
