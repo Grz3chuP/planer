@@ -3,7 +3,7 @@ import {Database_interface} from "../interface/database_interface";
 import {DateTime, Interval} from "luxon";
 import {CdkDragStart} from "@angular/cdk/drag-drop";
 import {Job_interface} from "../interface/Job_interface";
-import {readData, saveData} from "../firebase";
+import {readData, removeData, saveData} from "../firebase";
 import {jobListSignal} from "../store";
 
 
@@ -16,7 +16,7 @@ import {jobListSignal} from "../store";
 
 export class PlanerComponent implements AfterViewInit {
   // @ViewChild('test') testDiv!: ElementRef;
-  jobList: Job_interface[] = [];
+  currentDragingJob: Job_interface | undefined;
   jobListFilter: Job_interface[] = [];
   newJobListPos: Job_interface[] = [];
   dataOd: string = '2023-11-22';
@@ -180,14 +180,18 @@ export class PlanerComponent implements AfterViewInit {
     }
     jobListSignal().push(newJob);
     saveData(newJob).then(() => {
+      this.onDateChange();
 
-        alert('Zapisano');
       }
     );
 
 
   }
+  onDragStart(job:Job_interface, $event: DragEvent) {
+    this.currentDragingJob = jobListSignal().find((item) => item.id === job.id);
+    console.log(this.currentDragingJob?.job_name);
 
+  }
   animationClear(event: any) {
     const element = event.target as HTMLElement;
     console.log(element);
@@ -201,5 +205,16 @@ export class PlanerComponent implements AfterViewInit {
     element.style.boxShadow = '0 0 5px 5px #000000';
   }
 
+  removeJob(event: any) {
+    console.log('drop event ' + event);
+    if (this.currentDragingJob) {
+      removeData(this.currentDragingJob.id);
+      jobListSignal().splice(jobListSignal().indexOf(this.currentDragingJob), 1);
+      this.onDateChange();
+    }
+
+  }
   protected readonly jobListSignal = jobListSignal;
+
+
 }

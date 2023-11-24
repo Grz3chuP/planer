@@ -35,7 +35,7 @@ export async function saveData(data: Job_interface) {
     const key = newDocRef.key;
     if (key) {
       await set(ref(db, "planer1/" + key + "/id"), key);
-      console.log("success");
+      alert("success");
       return key;
     } else {
       console.error('Failed to get the key from Firebase.');
@@ -56,11 +56,21 @@ export async function readData() {
       });
       console.log(snapshot.val());
     } else {
-      console.log("No data available");
+     alert("No data available");
     }
   });
 }
 
+export async function removeData(id: string) {
+  await remove(ref(db, "planer1/" + id)).then(
+    () => {
+     alert("Remove succeeded.");
+    }
+  ).catch((error) => {
+    alert("Remove failed: " + error.message);
+  }
+  );
+}
 onValue(ref(db, 'planer1'), (snapshot) => {
   const data = snapshot.val();
   if (data) {

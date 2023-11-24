@@ -9,6 +9,11 @@
       {{dataDo}}
     </div>
     <button (click)="onDateChange()">filtr</button>
+    <div class="removeBin"
+         id="bin"
+        [dndDropzone]="" (dndDrop)="removeJob($event)"
+         (mouseover)="getOffset($event)"
+         >kosz</div>
   </div>
   <!--  Date Planer-->
   <div id="planer"
@@ -21,6 +26,7 @@
            (dndStart)="changeStyle($event)"
            (dndEnd)="changeJobPosition(job, $event)"
            (mousemove)="getOffset($event)"
+          (dragstart)="onDragStart(job, $event)"
 
            [style]="{'left': job.job_Position_X + 'px',
             'top': job.job_Position_Y + 'px',
@@ -82,8 +88,7 @@
 
 {{mousePositionX}}
 {{mousePositionY}}
-{{jobListSignal() | json}}
-{{newJobListPos | json}}
+{{currentDragingJob?.job_name}}
 
 
 

@@ -63,3 +63,8 @@ position: absolute;
   height: 80px;
  top:20px;
 }
+.removeBin {
+  width: 80px;
+  height: 80px;
+  background-color: green;
+}

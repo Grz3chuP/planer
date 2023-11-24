@@ -10,26 +10,27 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule} from "@angular/forms";
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
-import {DndDraggableDirective} from "ngx-drag-drop";
+import {DndDraggableDirective, DndDropzoneDirective} from "ngx-drag-drop";
 
 @NgModule({
   declarations: [
     AppComponent,
     PlanerComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    MatSlideToggleModule,
-    MatInputModule,
-    MatDatepickerModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    CdkDrag,
-    CdkDropList,
-    DndDraggableDirective,
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        MatSlideToggleModule,
+        MatInputModule,
+        MatDatepickerModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        CdkDrag,
+        CdkDropList,
+        DndDraggableDirective,
+        DndDropzoneDirective,
 
-  ],
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
