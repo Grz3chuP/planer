@@ -13,6 +13,10 @@
   height: 100px;
 
 }
+.planerWrapperSection{
+  width: 100%;
+  height: 130px;
+}
 .dayWrapper {
   width: 240px;
   height: 100px;
@@ -67,4 +71,24 @@ position: absolute;
   width: 80px;
   height: 80px;
   background-color: green;
+}
+.planerTitle {
+  width: 100%;
+  height: 30px;
+  background-color: aqua;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-bottom: brown solid 1px;
+  box-sizing: border-box;
+}
+.createJobWrapper {
+  width: 100%;
+  height: 100%;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

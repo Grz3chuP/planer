@@ -1,10 +1,9 @@
 import {AfterViewInit, Component, ElementRef, HostListener, Renderer2, ViewChild} from '@angular/core';
-import {Database_interface} from "../interface/database_interface";
 import {DateTime, Interval} from "luxon";
-import {CdkDragStart} from "@angular/cdk/drag-drop";
 import {Job_interface} from "../interface/Job_interface";
 import {readData, removeData, saveData} from "../firebase";
-import {jobListSignal} from "../store";
+import {jobListSignal, planersListSignal} from "../store";
+import {Planer_interface} from "../interface/Planer_interface";
 
 
 @Component({
@@ -15,10 +14,11 @@ import {jobListSignal} from "../store";
 })
 
 export class PlanerComponent implements AfterViewInit {
-  // @ViewChild('test') testDiv!: ElementRef;
+
   currentDragingJob: Job_interface | undefined;
   jobListFilter: Job_interface[] = [];
   newJobListPos: Job_interface[] = [];
+  planersList: Planer_interface[] = [];
   dataOd: string = '2023-11-22';
   dataDo: string = '2023-11-28';
   jobHours: number = 0;
@@ -33,9 +33,21 @@ export class PlanerComponent implements AfterViewInit {
   jobDescription: string = '';
   jobPositionX: number = 0;
   jobPositionY: number = 0;
+  jobPlaner: any;
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef) {
+    const planer1: Planer_interface = {
+      id: 1,
+      planer_name: 'planer1',
+    }
+    const planer2: Planer_interface = {
+      id: 2,
+      planer_name: 'planer2',
+    }
+    planersListSignal().push(planer1);
+    planersListSignal().push(planer2);
 
+    // planersListSignal().push(this);
     readData().then((data: Job_interface | void) => {
       if (data) {
         Object.values(data).forEach((item: Job_interface) => {
@@ -46,7 +58,7 @@ export class PlanerComponent implements AfterViewInit {
       }
       console.log(data);
 
-     // jobListSignal().push(data);
+      // jobListSignal().push(data);
       this.onDateChange();
     });
 
@@ -65,14 +77,15 @@ export class PlanerComponent implements AfterViewInit {
     this.daysInRange = dateInterval.splitBy({days: 1}).map((item) => item.start);
     console.log(this.daysInRange);
     console.log(this.daysInRange[0].toFormat('yyyy-MM-dd'));
-     this.jobListFilter = jobListSignal().filter((item) => {
+    this.jobListFilter = jobListSignal().filter((item) => {
       return item.job_date >= this.dataOd && item.job_date <= this.dataDo;
-     });
+    });
     this.jobListFilter.forEach((item) => {
       item.job_Position_X = 10 * item.begin_time + ((this.daysDifference(this.dataOd, item.job_date))! * 240);
 
     });
   }
+
   // onDateChange() {
   //   this.filtr = this.dataBase.filter((item) => {
   //     return item.data >= this.dataOd && item.data <= this.dataDo;
@@ -107,11 +120,13 @@ export class PlanerComponent implements AfterViewInit {
     const newX = this.leftPosition - (this.leftPosition % 10);
     console.log('newX' + newX);
     const newJobListPos: Job_interface[] = [];
-   jobListSignal().forEach(item => {
+    jobListSignal().forEach(item => {
       if (item.id !== thisJob!.id) {
-        if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-          newJobListPos.push(item);
-          console.log('newJobListPos' + newJobListPos.length);
+        if (item.job_planer_id === thisJob!.job_planer_id) {
+          if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
+            newJobListPos.push(item);
+            console.log('newJobListPos' + newJobListPos.length);
+          }
         }
       }
     });
@@ -132,6 +147,11 @@ export class PlanerComponent implements AfterViewInit {
 
     console.log(this.topPosition + ' ' + this.leftPosition);
 
+  }
+
+// tu wyswietlam tylko prace dla danego planera
+  getJobsForPlaner(planerId: string) {
+    return this.jobListFilter.filter(job => job.job_planer_id === planerId);
   }
 
   // @HostListener('mousedown', ['$event'])
@@ -175,23 +195,26 @@ export class PlanerComponent implements AfterViewInit {
       job_hours: this.jobHours,
       begin_time: 1,
       job_description: this.jobDescription,
+      job_planer_id: this.jobPlaner,
       job_Position_X: this.jobPositionX,
       job_Position_Y: this.jobPositionY
     }
     jobListSignal().push(newJob);
     saveData(newJob).then(() => {
-      this.onDateChange();
+        this.onDateChange();
 
       }
     );
 
 
   }
-  onDragStart(job:Job_interface, $event: DragEvent) {
+
+  onDragStart(job: Job_interface, $event: DragEvent) {
     this.currentDragingJob = jobListSignal().find((item) => item.id === job.id);
     console.log(this.currentDragingJob?.job_name);
 
   }
+
   animationClear(event: any) {
     const element = event.target as HTMLElement;
     console.log(element);
@@ -214,7 +237,11 @@ export class PlanerComponent implements AfterViewInit {
     }
 
   }
+
   protected readonly jobListSignal = jobListSignal;
+
+
+  protected readonly planersListSignal = planersListSignal;
 
 
 }
