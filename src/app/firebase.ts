@@ -1,9 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 
-import { getDatabase, ref, set, onValue, get, remove,push } from "firebase/database";
+import { getDatabase, ref, set, onValue, get, remove,push, query } from "firebase/database";
 import {Job_interface} from "./interface/Job_interface";
 import {jobListSignal} from "./store";
+
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -53,6 +54,8 @@ export async function readData() {
       Object.values(snapshot.val()).forEach((item: any) => {
         jobListSignal().push(item);
         console.log('itemy z bazy danych' + item);
+
+
       });
       console.log(snapshot.val());
     } else {
@@ -60,7 +63,25 @@ export async function readData() {
     }
   });
 }
+//wybieram tylko nie dodane elementy
+export async function getDataWithQuery() {
+  const jobRef = ref(db, "planer1") ;
+  const cos = 'https://planer-449d2-default-rtdb.europe-west1.firebasedatabase.app/planer1.json?orderBy="is_set"&equalTo=false'
 
+
+
+  // await get(query).then(snapshot => {
+  //   if (snapshot.exists()) {
+  //     Object.values(snapshot.val()).forEach((item: any) => {
+  //       jobListSignal().push(item);
+  //       console.log('itemy z bazy danych' + item);
+  //     });
+  //     console.log(snapshot.val());
+  //   } else {
+  //     alert("No data available");
+  //   }
+  // });
+}
 export async function removeData(id: string) {
   await remove(ref(db, "planer1/" + id)).then(
     () => {

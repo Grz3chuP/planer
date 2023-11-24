@@ -64,40 +64,46 @@
 
 <!--zapisywanie nowej pracy-->
   <div class="createJobWrapper">
-    <div class="createJob">
-      <div class="jobName">
-        <input type="text"
-               placeholder="Nazwa"
-               [(ngModel)]="jobName">
-      </div>
-      <div class="jobDescription">
-        <input type="text"
-               placeholder="Opis"
-               [(ngModel)]="jobDescription">
-      </div>
-      <div class="jobDescription">
-        <select [(ngModel)]="jobPlaner">
-          <option *ngFor="let planer of planersListSignal()" [value]="planer.planer_name">{{planer.planer_name}}</option>
-        </select>
-      </div>
-      <label for="jobHours">Ilość godzin
-      <div class="hoursNumber">
-        <input type="number"
-               id="jobHours"
-               placeholder="Ilość godzin"
-               [(ngModel)]="jobHours">
-      </div>
-        </label>
-<!--      <div class="jobPositionX">-->
-<!--        <input type="number" [(ngModel)]="jobPositionX">-->
-<!--      </div>-->
-<!--      <div class="jobPositionY">-->
-<!--        <input type="number" [(ngModel)]="jobPositionY">-->
-<!--      </div>-->
-      <div class="jobSubmit">
-        <button (click)="createJob()">Dodaj</button>
+    <div class="newJobsList" >
+      <div class="newJobElement"
+           *ngFor="let job of newJobsList"
+
+           [style]="{'background-color': job.job_color}">
+        {{job.job_name}}
       </div>
     </div>
+    <div class="createJobForm">
+      <div class="createJob">
+        <div class="jobName">
+          <input type="text"
+                 placeholder="Nazwa"
+                 [(ngModel)]="jobName">
+        </div>
+        <div class="jobDescription">
+          <input type="text"
+                 placeholder="Opis"
+                 [(ngModel)]="jobDescription">
+        </div>
+        <div class="jobDescription">
+          <select [(ngModel)]="jobPlaner">
+            <option *ngFor="let planer of planersListSignal()" [value]="planer.planer_name">{{planer.planer_name}}</option>
+          </select>
+        </div>
+        <label for="jobHours">Ilość godzin
+          <div class="hoursNumber">
+            <input type="number"
+                   id="jobHours"
+                   placeholder="Ilość godzin"
+                   [(ngModel)]="jobHours">
+          </div>
+        </label>
+
+        <div class="jobSubmit">
+          <button (click)="createJob()">Dodaj</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 

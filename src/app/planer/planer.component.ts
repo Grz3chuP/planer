@@ -42,7 +42,7 @@ export class PlanerComponent implements AfterViewInit {
 
   //lista planerow
   jobPlaner: any;
-
+  newJobsList: any;
 
   //wyliczanie scrolla
   previousScroll = 0;
@@ -92,6 +92,7 @@ export class PlanerComponent implements AfterViewInit {
     console.log(this.daysInRange[0].toFormat('yyyy-MM-dd'));
     this.jobListFilter = jobListSignal().filter((item) => {
       return item.job_date >= this.dataOd && item.job_date <= this.dataDo;
+
     });
     this.jobListFilter.forEach((item) => {
       item.job_Position_X = 10 * item.begin_time + ((this.daysDifference(this.dataOd, item.job_date))! * 240);
@@ -142,6 +143,7 @@ export class PlanerComponent implements AfterViewInit {
     });
     if (newJobListPos.length === 0) {
       thisJob!.job_Position_X = newX;
+      thisJob!.job_Position_Y = 0;
       element.style.opacity = '1';
       element.style.boxShadow = 'none';
       const claculateDay = Math.floor(newX / 240);
@@ -204,10 +206,11 @@ export class PlanerComponent implements AfterViewInit {
       job_date: DateTime.now().toFormat('yyyy-MM-dd'),
       job_hours: this.jobHours,
       begin_time: 1,
+      is_set: false,
       job_description: this.jobDescription,
       job_planer_id: this.jobPlaner,
       job_Position_X: this.jobPositionX,
-      job_Position_Y: this.jobPositionY
+      job_Position_Y: ((planersListSignal().length -  this.checkWhatIndexIsPickedPlaner() ) * 130)
     }
     jobListSignal().push(newJob);
     saveData(newJob).then(() => {
@@ -248,10 +251,16 @@ export class PlanerComponent implements AfterViewInit {
 
   }
 
+  checkWhatIndexIsPickedPlaner() {
+    const index = planersListSignal().findIndex((item) => item.planer_name === this.jobPlaner);
+    console.log('index '  + index);
+    return index;
+  }
   protected readonly jobListSignal = jobListSignal;
 
 
   protected readonly planersListSignal = planersListSignal;
+
 
 
 }
