@@ -16,24 +16,37 @@ import {Planer_interface} from "../interface/Planer_interface";
 export class PlanerComponent implements AfterViewInit {
 
   currentDragingJob: Job_interface | undefined;
+  //wybrane zadania do wyswietlenia w tej dacie
   jobListFilter: Job_interface[] = [];
   newJobListPos: Job_interface[] = [];
   planersList: Planer_interface[] = [];
+  //data od i do
   dataOd: string = '2023-11-22';
   dataDo: string = '2023-11-28';
-  jobHours: number = 0;
-  hours: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+  //ilosc godzin w dniu tylko do wyswietlenia
+  hours: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+
   topPosition: number = 20;
   leftPosition: number = 0;
   mousePositionX: number = 0;
   mousePositionY: number = 0;
   elementOffset: { left: number, top: number } = {left: 0, top: 0};
   daysInRange: any;
+
+  //dane z formularza
   jobName: string = '';
   jobDescription: string = '';
   jobPositionX: number = 0;
   jobPositionY: number = 0;
+  jobHours: number = 0;
+
+  //lista planerow
   jobPlaner: any;
+
+
+  //wyliczanie scrolla
+  previousScroll = 0;
+  scrolledDistance = 0;
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef) {
     const planer1: Planer_interface = {
@@ -85,19 +98,16 @@ export class PlanerComponent implements AfterViewInit {
 
     });
   }
+//przeliczam scrolla
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event: Event) {
+    const curentScroll = window.scrollX || document.documentElement.scrollLeft;
 
-  // onDateChange() {
-  //   this.filtr = this.dataBase.filter((item) => {
-  //     return item.data >= this.dataOd && item.data <= this.dataDo;
-  //   });
-  //   this.jobListFilter = this.jobList.filter((item) => {
-  //     return item.job_date >= this.dataOd && item.job_date <= this.dataDo;
-  //   });
-  //   this.jobListFilter.forEach((item) => {
-  //     item.job_Position_X = 10 * item.begin_time + ((this.daysDifference(this.dataOd, item.job_date))! * 240);
-  //
-  //   });
-  // }
+    this.scrolledDistance = curentScroll - this.previousScroll;
+    this.previousScroll = curentScroll;
+  }
+
+
 
   //obliczam roznicę w dniach miedzy datami
   daysDifference(date1: string, date2: string) {
@@ -114,7 +124,7 @@ export class PlanerComponent implements AfterViewInit {
   changeJobPosition(job: Job_interface, event: any) {
 
     const element = event.target as HTMLElement;
-    this.leftPosition = event.x - this.elementOffset.left;
+    this.leftPosition = event.x - this.elementOffset.left + this.previousScroll;
     // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
     const thisJob = jobListSignal().find((item) => item.id === job.id);
     const newX = this.leftPosition - (this.leftPosition % 10);
