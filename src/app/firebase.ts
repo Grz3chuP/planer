@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 
-import { getDatabase, ref, set, onValue, get, remove,push, query } from "firebase/database";
+import { getDatabase, ref, set, onValue, get, remove,push, query, update } from "firebase/database";
 import {Job_interface} from "./interface/Job_interface";
 import {jobListSignal} from "./store";
 
@@ -47,6 +47,26 @@ export async function saveData(data: Job_interface) {
       return null;
     }
 }
+
+export async function saveChanges(data: Job_interface) {
+  try {
+   const key = data.id;
+
+    if (key) {
+    const jobRef = ref(db, "planer1/" + key);
+    await update(jobRef, data);
+      return key;
+    } else {
+      console.error('Failed to get the key from Firebase.');
+      return null;
+    }
+  } catch (error: any) {
+    console.log("error");
+    return null;
+  }
+}
+
+
 export async function readData() {
    const query = ref(db, "planer1");
   await get(query).then(snapshot => {
@@ -95,7 +115,6 @@ export async function removeData(id: string) {
 onValue(ref(db, 'planer1'), (snapshot) => {
   const data = snapshot.val();
   if (data) {
-    console.log(data);
 
 
   }

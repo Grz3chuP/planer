@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {DateTime, Interval} from "luxon";
 import {Job_interface} from "../interface/Job_interface";
-import {readData, removeData, saveData} from "../firebase";
+import {readData, removeData, saveChanges, saveData} from "../firebase";
 import {jobListSignal, planersListSignal} from "../store";
 import {Planer_interface} from "../interface/Planer_interface";
 
@@ -57,8 +57,10 @@ export class PlanerComponent implements AfterViewInit {
       id: 2,
       planer_name: 'planer2',
     }
+
     planersListSignal().push(planer1);
     planersListSignal().push(planer2);
+
 
     // planersListSignal().push(this);
     readData().then((data: Job_interface | void) => {
@@ -150,6 +152,7 @@ export class PlanerComponent implements AfterViewInit {
       const date = DateTime.fromISO(this.dataOd).plus({days: claculateDay});
       thisJob!.job_date = date.toFormat('yyyy-MM-dd');
       thisJob!.begin_time = newX % 240 / 10;
+      saveChanges(thisJob!);
     } else {
       //
       element.style.opacity = '1';
@@ -222,10 +225,8 @@ export class PlanerComponent implements AfterViewInit {
 
   }
 
-  onDragStart(job: Job_interface, $event: DragEvent) {
+  onDragStart(job: Job_interface) {
     this.currentDragingJob = jobListSignal().find((item) => item.id === job.id);
-    console.log(this.currentDragingJob?.job_name);
-
   }
 
   animationClear(event: any) {
@@ -261,6 +262,53 @@ export class PlanerComponent implements AfterViewInit {
 
   protected readonly planersListSignal = planersListSignal;
 
+// zmiana planerow
+  changePlanersJob(planer: Planer_interface) {
+    // if (planer.planer_name === this.currentDragingJob?.job_planer_id) {
+    //   return;
+    // } else {
+    //   this.currentDragingJob!.job_planer_id = planer.planer_name;
+
+    // }
+  }
+
+  //poruszanie manualne elementami
+  moveRight(side: number) {
+    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+    const newJobListPos: Job_interface[] = [];
+    jobListSignal().forEach(item => {
+      if (item.id !== this.currentDragingJob!.id) {
+        if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
+        //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
+          if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1 ) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
+            newJobListPos.push(item);
+          }
+        }
+      }
+    });
+    if (this.currentDragingJob!.is_set === false) {
+    this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
+    this.currentDragingJob!.is_set = true;
+    }
+  }
+
+  moveLeft(side: number) {
+    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+    const newJobListPos: Job_interface[] = [];
+    jobListSignal().forEach(item => {
+      if (item.id !== this.currentDragingJob!.id) {
+        if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
+          //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
+          if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1 ) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
+            newJobListPos.push(item);
+          }
+        }
+      }
+    });
+
+
+    
+  }
 
 
 }

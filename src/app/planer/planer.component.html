@@ -16,7 +16,9 @@
          >kosz</div>
   </div>
   <!--  Date Planer-->
-  <div class="planerWrapperSection" *ngFor="let plan of planersListSignal()">
+  <div class="planerWrapperSection"
+       [dndDropzone]="" (dndDrop)="changePlanersJob(plan)"
+       *ngFor="let plan of planersListSignal()">
     <div class="planerTitle">{{plan.planer_name}}</div>
     <div id="planer"
          class="planerWrapper d-flex position-relative">
@@ -29,8 +31,8 @@
              (dndStart)="changeStyle($event)"
              (dndEnd)="changeJobPosition(job, $event)"
              (mousemove)="getOffset($event)"
-             (dragstart)="onDragStart(job, $event)"
-
+             (dragstart)="onDragStart(job)"
+             (click)="onDragStart(job)"
              [style]="{'left': job.job_Position_X + 'px',
             'top': job.job_Position_Y + 'px',
              'transform': 'translate3d(0,-1px, 0)',
@@ -64,6 +66,16 @@
 
 <!--zapisywanie nowej pracy-->
   <div class="createJobWrapper">
+    <div class="currentElement" >
+      <button class="pushLeft" (click)="moveLeft(-10)"><</button>
+      <div class="element  "
+            *ngIf="currentDragingJob"
+           [style]="{ 'width': currentDragingJob!.job_hours! * 10 + 'px'}">
+        {{currentDragingJob?.job_name}}
+        {{currentDragingJob?.is_set}}
+      </div>
+      <button class="pushLeft" (click)="moveRight(10)">></button>
+    </div>
     <div class="newJobsList" >
       <div class="newJobElement"
            *ngFor="let job of newJobsList"
