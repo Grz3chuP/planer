@@ -279,19 +279,23 @@ export class PlanerComponent implements AfterViewInit {
     jobListSignal().forEach(item => {
       if (item.id !== this.currentDragingJob!.id) {
         if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
-        //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-          if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1 ) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
+          //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
+          if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
             newJobListPos.push(item);
           }
         }
       }
     });
-    if (this.currentDragingJob!.is_set === false) {
-    this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
-    this.currentDragingJob!.is_set = true;
+    if (newJobListPos.length > 0) {
+      if (!this.currentDragingJob!.is_set) {
+        this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
+        this.currentDragingJob!.is_set = true;
+      } else {
+        this.currentDragingJob!.is_set = false;
+        this.currentDragingJob!.job_hours = 1;
+      }
     }
   }
-
   moveLeft(side: number) {
     this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
     const newJobListPos: Job_interface[] = [];
@@ -307,7 +311,7 @@ export class PlanerComponent implements AfterViewInit {
     });
 
 
-    
+
   }
 
 
