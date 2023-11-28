@@ -6,6 +6,7 @@ export interface Job_interface {
   job_date: string;
   is_set: boolean;
   job_hours: number;
+  hours_extended: number;
   begin_time: number;
   job_Position_X: number;
   job_Position_Y: number;

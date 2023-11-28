@@ -210,6 +210,7 @@ export class PlanerComponent implements AfterViewInit {
       job_hours: this.jobHours,
       begin_time: 1,
       is_set: false,
+      hours_extended: 0,
       job_description: this.jobDescription,
       job_planer_id: this.jobPlaner,
       job_Position_X: this.jobPositionX,
@@ -284,13 +285,13 @@ export class PlanerComponent implements AfterViewInit {
 
             newJobListPos.push(item);
             if (!this.currentDragingJob!.is_set) {
-              this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
+              this.currentDragingJob!.hours_extended += newJobListPos[0].job_hours;
               this.currentDragingJob!.is_set = true;
 
             }
               if (this.currentDragingJob!.job_Position_X === newJobListPos[0].job_Position_X) {
                 this.currentDragingJob!.job_Position_X += newJobListPos[0].job_hours * 10;
-                this.currentDragingJob!.job_hours -= newJobListPos[0].job_hours;
+                this.currentDragingJob!.hours_extended -= newJobListPos[0].job_hours;
                 this.currentDragingJob!.is_set = false;
                 newJobListPos.splice(0, 1)
               }
@@ -314,15 +315,17 @@ export class PlanerComponent implements AfterViewInit {
             console.log((this.currentDragingJob!.job_Position_X + this.currentDragingJob!.job_hours) + ' ' + ((newJobListPos[0].job_Position_X + newJobListPos[0].job_hours) ));
 
             if (!this.currentDragingJob!.is_set) {
-              this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
+              this.currentDragingJob!.hours_extended += newJobListPos[0].job_hours;
               this.currentDragingJob!.job_Position_X -= newJobListPos[0].job_hours * 10;
               this.currentDragingJob!.is_set = true;
               console.log('newJobListPos' + newJobListPos.length);
 
           }
-          if(this.currentDragingJob!.job_Position_X  === newJobListPos[0].job_Position_X - 50 ) {
+          if(this.currentDragingJob!.job_Position_X  === newJobListPos[0].job_Position_X - ((this.currentDragingJob!.job_hours - this.currentDragingJob!.hours_extended) * 10)){
   console.log((this.currentDragingJob!.job_Position_X + this.currentDragingJob!.job_hours) + ' ' + (newJobListPos[0].job_Position_X + newJobListPos[0].job_hours));
-            this.currentDragingJob!.job_hours -= newJobListPos[0].job_hours;
+          //  this.currentDragingJob!.hours_extended -= newJobListPos[0].job_hours;
+            this.currentDragingJob!.hours_extended = 0;
+
             this.currentDragingJob!.is_set = false;
             newJobListPos.splice(0, 1)
           }
