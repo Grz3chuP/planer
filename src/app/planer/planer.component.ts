@@ -281,22 +281,28 @@ export class PlanerComponent implements AfterViewInit {
         if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
           //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
           if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
+
             newJobListPos.push(item);
+            if (!this.currentDragingJob!.is_set) {
+              this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
+              this.currentDragingJob!.is_set = true;
+
+            }
+              if (this.currentDragingJob!.job_Position_X === newJobListPos[0].job_Position_X) {
+                this.currentDragingJob!.job_Position_X += newJobListPos[0].job_hours * 10;
+                this.currentDragingJob!.job_hours -= newJobListPos[0].job_hours;
+                this.currentDragingJob!.is_set = false;
+                newJobListPos.splice(0, 1)
+              }
+            }
           }
         }
-      }
+
     });
-    if (newJobListPos.length > 0) {
-      if (!this.currentDragingJob!.is_set) {
-        this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
-        this.currentDragingJob!.is_set = true;
-      } else {
-        this.currentDragingJob!.is_set = false;
-        this.currentDragingJob!.job_hours = 1;
-      }
-    }
   }
+
   moveLeft(side: number) {
+
     this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
     const newJobListPos: Job_interface[] = [];
     jobListSignal().forEach(item => {
@@ -305,6 +311,21 @@ export class PlanerComponent implements AfterViewInit {
           //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
           if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1 ) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
             newJobListPos.push(item);
+            console.log((this.currentDragingJob!.job_Position_X + this.currentDragingJob!.job_hours) + ' ' + ((newJobListPos[0].job_Position_X + newJobListPos[0].job_hours) ));
+
+            if (!this.currentDragingJob!.is_set) {
+              this.currentDragingJob!.job_hours += newJobListPos[0].job_hours;
+              this.currentDragingJob!.job_Position_X -= newJobListPos[0].job_hours * 10;
+              this.currentDragingJob!.is_set = true;
+              console.log('newJobListPos' + newJobListPos.length);
+
+          }
+          if(this.currentDragingJob!.job_Position_X  === newJobListPos[0].job_Position_X - 50 ) {
+  console.log((this.currentDragingJob!.job_Position_X + this.currentDragingJob!.job_hours) + ' ' + (newJobListPos[0].job_Position_X + newJobListPos[0].job_hours));
+            this.currentDragingJob!.job_hours -= newJobListPos[0].job_hours;
+            this.currentDragingJob!.is_set = false;
+            newJobListPos.splice(0, 1)
+          }
           }
         }
       }

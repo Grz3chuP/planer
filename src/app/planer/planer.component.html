@@ -36,6 +36,7 @@
              [style]="{'left': job.job_Position_X + 'px',
             'top': job.job_Position_Y + 'px',
              'transform': 'translate3d(0,-1px, 0)',
+             'z-index': job.is_set ? '1' : '100',
               'width': job.job_hours * 10 + 'px'}">
           <div class="jobChecker"  >
             x: {{job.job_Position_X}}
@@ -44,6 +45,7 @@
             {{job.job_date}}
             {{job.job_hours}}
             {{job.begin_time}}
+            {{job.is_set}}
           </div>
 
 
