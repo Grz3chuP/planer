@@ -34,7 +34,7 @@
 .jobElement{
   width: 80px;
   height: 80px;
-  background-color: red;
+  background-color: #e7a1a1;
   position: absolute;
   z-index: 100;
   transition: 0.3s ease-out;
@@ -93,7 +93,7 @@ height: 100px;
 }
 .element {
   height: 80px;
-  background-color: red;
+  background-color: #e7a1a1;
 
   transition: 0.3s ease-out;
   border: #555555 solid 1px;
@@ -118,5 +118,8 @@ font-size: 1.2rem;
   box-shadow: #555555 1px 1px 1px 0;
 }
 .sharingJob {
-  background-color: #65e1e1;
+  background-color: #77b400;
+}
+.pickedJob {
+  background-color: #e1e165;
 }

@@ -35,6 +35,8 @@
              (click)="onDragStart(job)"
              [class]="{
              'sharingJob': job.is_set,
+             'pickedJob': job.id === currentDragingJob?.id
+
              }"
              [style]="{'left': job.job_Position_X + 'px',
             'top': job.job_Position_Y + 'px',

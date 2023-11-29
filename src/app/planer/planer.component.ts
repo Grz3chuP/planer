@@ -361,27 +361,26 @@ export class PlanerComponent implements AfterViewInit {
 
 
   }
-  limit= 0;
+
   testNewJobListPos: Job_interface[] = [];
   pushRight(side: number) {
     console.log('pushRight');
-
-    if(this.limit < 4) {
+let limit = 0;
+    if(limit < 4) {
       this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
-
       this.checkingIfJobIsInWay(this.currentDragingJob!).forEach((item) => {
         item.job_Position_X += side;
-        this.limit++;
+        limit++;
         this.checkingIfJobIsInWay(item).forEach((item) => {
           item.job_Position_X += side;
-          this.limit++;
+          limit++;
           this.checkingIfJobIsInWay(item).forEach((item) => {
             item.job_Position_X += side;
-            this.limit++;
+            limit++;
 
             this.checkingIfJobIsInWay(item).forEach((item) => {
               item.job_Position_X += side;
-              this.limit++;
+              limit++;
 
             });
           });
