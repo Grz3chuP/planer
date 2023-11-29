@@ -281,7 +281,7 @@ export class PlanerComponent implements AfterViewInit {
       if (item.id !== this.currentDragingJob!.id) {
         if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
           //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-          if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
+          if (item.job_Position_X < this.currentDragingJob!.job_Position_X + (this.currentDragingJob!.job_hours * 10) && item.job_Position_X + (item.job_hours * 10)  > this.currentDragingJob!.job_Position_X) {
 
             newJobListPos.push(item);
             if (!this.currentDragingJob!.is_set) {
@@ -310,20 +310,20 @@ export class PlanerComponent implements AfterViewInit {
       if (item.id !== this.currentDragingJob!.id) {
         if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
           //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-          if (item.job_Position_X <= this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours * 10) - 1 ) && item.job_Position_X + ((item.job_hours * 10) - 1) >= this.currentDragingJob!.job_Position_X) {
+          if (item.job_Position_X < this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours + this.currentDragingJob!.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10)  > this.currentDragingJob!.job_Position_X) {
             newJobListPos.push(item);
-            console.log((this.currentDragingJob!.job_Position_X + this.currentDragingJob!.job_hours) + ' ' + ((newJobListPos[0].job_Position_X + newJobListPos[0].job_hours) ));
 
             if (!this.currentDragingJob!.is_set) {
               this.currentDragingJob!.hours_extended += newJobListPos[0].job_hours;
-              this.currentDragingJob!.job_Position_X -= newJobListPos[0].job_hours * 10;
+              this.currentDragingJob!.job_Position_X -= this.currentDragingJob!.hours_extended * 10;
               this.currentDragingJob!.is_set = true;
               console.log('newJobListPos' + newJobListPos.length);
 
           }
-          if(this.currentDragingJob!.job_Position_X  === newJobListPos[0].job_Position_X - ((this.currentDragingJob!.job_hours - this.currentDragingJob!.hours_extended) * 10)){
-  console.log((this.currentDragingJob!.job_Position_X + this.currentDragingJob!.job_hours) + ' ' + (newJobListPos[0].job_Position_X + newJobListPos[0].job_hours));
-          //  this.currentDragingJob!.hours_extended -= newJobListPos[0].job_hours;
+            console.log(this.currentDragingJob!.job_Position_X +(( this.currentDragingJob!.job_hours + this.currentDragingJob!.hours_extended) * 10) + ' ' + newJobListPos[0].job_Position_X + (newJobListPos[0].job_hours) * 10);
+          if(this.currentDragingJob!.job_Position_X + (( this.currentDragingJob!.job_hours + this.currentDragingJob!.hours_extended) * 10)  === newJobListPos[0].job_Position_X + (newJobListPos[0].job_hours * 10)) {
+  console.log(this.currentDragingJob!.job_Position_X +(( this.currentDragingJob!.job_hours + this.currentDragingJob!.hours_extended) * 10) + ' ' + (newJobListPos[0].job_Position_X + newJobListPos[0].job_hours) * 10);
+
             this.currentDragingJob!.hours_extended = 0;
 
             this.currentDragingJob!.is_set = false;
