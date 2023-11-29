@@ -228,7 +228,9 @@ export class PlanerComponent implements AfterViewInit {
 
   onDragStart(job: Job_interface) {
     this.currentDragingJob = jobListSignal().find((item) => item.id === job.id);
+
   }
+
 
   animationClear(event: any) {
     const element = event.target as HTMLElement;
@@ -241,6 +243,8 @@ export class PlanerComponent implements AfterViewInit {
     const element = $event.target as HTMLElement;
     element.style.opacity = '0.5';
     element.style.boxShadow = '0 0 5px 5px #000000';
+    this.currentDragingJob!.hours_extended = 0;
+    this.currentDragingJob!.is_set = false;
   }
 
   removeJob(event: any) {
@@ -338,5 +342,29 @@ export class PlanerComponent implements AfterViewInit {
 
   }
 
+
+  pushLeft(side: number) {
+    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+  }
+
+  pushRight(side: number) {
+    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+  }
+
+
+
+  checkingIfJobIsInWay() {
+    const newJobListPos: Job_interface[] = [];
+    jobListSignal().forEach(item => {
+      if (item.id !== this.currentDragingJob!.id) {
+        if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
+          //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
+          if (item.job_Position_X < this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours + this.currentDragingJob!.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > this.currentDragingJob!.job_Position_X) {
+            newJobListPos.push(item);
+          }
+        }
+      }
+    });
+  }
 
 }

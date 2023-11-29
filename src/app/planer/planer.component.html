@@ -33,6 +33,9 @@
              (mousemove)="getOffset($event)"
              (dragstart)="onDragStart(job)"
              (click)="onDragStart(job)"
+             [class]="{
+             'sharingJob': job.is_set,
+             }"
              [style]="{'left': job.job_Position_X + 'px',
             'top': job.job_Position_Y + 'px',
              'transform': 'translate3d(0,-1px, 0)',
@@ -69,7 +72,9 @@
 <!--zapisywanie nowej pracy-->
   <div class="createJobWrapper">
     <div class="currentElement" >
+      <button class="pushLeft" (click)="pushLeft(-10)"><|</button>
       <button class="pushLeft" (click)="moveLeft(-10)"><</button>
+
       <div class="element  "
             *ngIf="currentDragingJob"
            [style]="{ 'width': currentDragingJob!.job_hours! * 10 + 'px'}">
@@ -77,6 +82,7 @@
         {{currentDragingJob?.is_set}}
       </div>
       <button class="pushLeft" (click)="moveRight(10)">></button>
+      <button class="pushLeft" (click)="pushRight(10)">|></button>
     </div>
     <div class="newJobsList" >
       <div class="newJobElement"

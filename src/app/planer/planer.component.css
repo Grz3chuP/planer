@@ -117,3 +117,6 @@ font-size: 1.2rem;
 .pushLeft:active {
   box-shadow: #555555 1px 1px 1px 0;
 }
+.sharingJob {
+  background-color: #65e1e1;
+}
