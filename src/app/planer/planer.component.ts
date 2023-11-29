@@ -22,7 +22,7 @@ export class PlanerComponent implements AfterViewInit {
   planersList: Planer_interface[] = [];
   //data od i do
   dataOd: string = '2023-11-22';
-  dataDo: string = '2023-11-28';
+  dataDo: string = '2023-11-30';
   //ilosc godzin w dniu tylko do wyswietlenia
   hours: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
@@ -337,27 +337,74 @@ export class PlanerComponent implements AfterViewInit {
 
 
   pushLeft(side: number) {
-    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
-  }
 
+    let limit= 0;
+    if(limit < 4) {
+      this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+      this.checkingIfJobIsInWay(this.currentDragingJob!).forEach((item) => {
+        item.job_Position_X += side;
+        limit++;
+        this.checkingIfJobIsInWay(item).forEach((item) => {
+          item.job_Position_X += side;
+          limit++;
+          this.checkingIfJobIsInWay(item).forEach((item) => {
+            item.job_Position_X += side;
+            limit++;
+            this.checkingIfJobIsInWay(item).forEach((item) => {
+              item.job_Position_X += side;
+              limit++;
+            });
+          });
+        });
+      });
+    }
+
+
+  }
+  limit= 0;
+  testNewJobListPos: Job_interface[] = [];
   pushRight(side: number) {
-    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+    console.log('pushRight');
+
+    if(this.limit < 4) {
+      this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+
+      this.checkingIfJobIsInWay(this.currentDragingJob!).forEach((item) => {
+        item.job_Position_X += side;
+        this.limit++;
+        this.checkingIfJobIsInWay(item).forEach((item) => {
+          item.job_Position_X += side;
+          this.limit++;
+          this.checkingIfJobIsInWay(item).forEach((item) => {
+            item.job_Position_X += side;
+            this.limit++;
+
+            this.checkingIfJobIsInWay(item).forEach((item) => {
+              item.job_Position_X += side;
+              this.limit++;
+
+            });
+          });
+        });
+      });
+    }
   }
 
 
 
-  checkingIfJobIsInWay() {
+  checkingIfJobIsInWay(nextJob: Job_interface) {
     const newJobListPos: Job_interface[] = [];
     jobListSignal().forEach(item => {
-      if (item.id !== this.currentDragingJob!.id) {
-        if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
-          //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-          if (item.job_Position_X < this.currentDragingJob!.job_Position_X + ((this.currentDragingJob!.job_hours + this.currentDragingJob!.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > this.currentDragingJob!.job_Position_X) {
+      if (item.id !== nextJob.id) {
+        if (item.job_planer_id === nextJob.job_planer_id) {
+          if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > nextJob.job_Position_X) {
             newJobListPos.push(item);
+
           }
         }
       }
     });
+    return newJobListPos;
   }
 
 }
