@@ -34,6 +34,7 @@
              (dragstart)="onDragStart(job)"
              (click)="onDragStart(job)"
              [class]="{
+             'lockJob': job.job_lock,
              'sharingJob': job.is_set,
              'pickedJob': job.id === currentDragingJob?.id
 
@@ -74,7 +75,7 @@
 <!--zapisywanie nowej pracy-->
   <div class="createJobWrapper">
     <div class="currentElement" >
-      <button class="pushLeft" (click)="pushLeft(-10)"><|</button>
+      <button class="pushLeft" (click)="pushObjectLeft(-10, currentDragingJob!)"><|</button>
       <button class="pushLeft" (click)="moveLeft(-10)"><</button>
 
       <div class="element  "
@@ -82,9 +83,21 @@
            [style]="{ 'width': currentDragingJob!.job_hours! * 10 + 'px'}">
         {{currentDragingJob?.job_name}}
         {{currentDragingJob?.is_set}}
+        <div class="changeElementMenu">
+          <div class="changeHours">
+            Zmień godziny:
+            <input type="number"
+                  [(ngModel)]="currentDragingJob.job_hours"
+                   >
+          </div>
+          <div class="lockJob">
+            <input type="checkbox"
+                   [(ngModel)]="currentDragingJob.job_lock">
+          </div>
+        </div>
       </div>
       <button class="pushLeft" (click)="moveRight(10)">></button>
-      <button class="pushLeft" (click)="pushRight(10)">|></button>
+      <button class="pushLeft" (click)="pushObjectRight(10, currentDragingJob!)">|></button>
     </div>
     <div class="newJobsList" >
       <div class="newJobElement"

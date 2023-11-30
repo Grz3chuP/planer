@@ -4,6 +4,7 @@ export interface Job_interface {
   job_description: string;
   job_planer_id: string;
   job_date: string;
+  job_lock: boolean;
   is_set: boolean;
   job_hours: number;
   hours_extended: number;

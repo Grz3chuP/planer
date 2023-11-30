@@ -209,6 +209,7 @@ export class PlanerComponent implements AfterViewInit {
       job_date: DateTime.now().toFormat('yyyy-MM-dd'),
       job_hours: this.jobHours,
       begin_time: 1,
+      job_lock: false,
       is_set: false,
       hours_extended: 0,
       job_description: this.jobDescription,
@@ -335,7 +336,7 @@ export class PlanerComponent implements AfterViewInit {
 
   }
 
-
+//nie dzziala dobrze
   pushLeft(side: number) {
 
     let limit= 0;
@@ -359,10 +360,31 @@ export class PlanerComponent implements AfterViewInit {
       });
     }
 
-
   }
 
-  testNewJobListPos: Job_interface[] = [];
+  pushObjectLeft(side: number, job: Job_interface) {
+    //szuakmy czy istniej in way object
+    //jeżeli istnieje to wywłujemy  jeszcze raz na nim tym razem
+   job.job_Position_X = job.job_Position_X + side;
+    if(this.checkingIfJobIsInWay(job).length > 0) {
+      this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[0]);
+    } else {
+      return;
+    }
+  }
+  pushObjectRight(side: number, job: Job_interface) {
+    //szuakmy czy istniej in way object
+    //jeżeli istnieje to wywłujemy  jeszcze raz na nim tym razem
+    job.job_Position_X = job.job_Position_X + side;
+    if(this.checkingIfJobIsInWay(job).length > 0) {
+      this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+    } else {
+      return;
+    }
+  }
+
+  //nie dziala narazie
+
   pushRight(side: number) {
     console.log('pushRight');
 let limit = 0;

@@ -123,3 +123,7 @@ font-size: 1.2rem;
 .pickedJob {
   background-color: #e1e165;
 }
+.lockJob {
+  background-color: red;
+  border: #555555 dotted 2px;
+}
