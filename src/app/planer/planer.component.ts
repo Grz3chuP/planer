@@ -286,22 +286,23 @@ export class PlanerComponent implements AfterViewInit {
 
   //poruszanie manualne elementami
   moveRight(side: number, job: Job_interface) {
-    job.job_Position_X = job.job_Position_X + side;
+   // job.job_Position_X = job.job_Position_X + side;
     const newJobListPos: Job_interface[] = [];
     jobListSignal().forEach(item => {
       if (item.id !== job.id) {
-        if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
+        if (item.job_planer_id === job.job_planer_id) {
           //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-          if (item.job_Position_X < this.currentDragingJob!.job_Position_X + (this.currentDragingJob!.job_hours * 10) && item.job_Position_X + (item.job_hours * 10)  > this.currentDragingJob!.job_Position_X) {
+          if (item.job_Position_X < job.job_Position_X + (job.job_hours * 10) && item.job_Position_X + (item.job_hours * 10)  > job.job_Position_X) {
             newJobListPos.push(item);
-            if (!this.currentDragingJob!.is_set) {
-              this.currentDragingJob!.hours_extended += newJobListPos[0].job_hours;
-              this.currentDragingJob!.is_set = true;
+            if (!job.is_set) {
+              job.hours_extended += newJobListPos[0].job_hours;
+
+              job.is_set = true;
             }
-              if (this.currentDragingJob!.job_Position_X === newJobListPos[0].job_Position_X) {
-                this.currentDragingJob!.job_Position_X += newJobListPos[0].job_hours * 10;
-                this.currentDragingJob!.hours_extended -= newJobListPos[0].job_hours;
-                this.currentDragingJob!.is_set = false;
+              if (job.job_Position_X === newJobListPos[0].job_Position_X) {
+               job.job_Position_X += newJobListPos[0].job_hours * 10;
+                job.hours_extended -= newJobListPos[0].job_hours;
+                job.is_set = false;
                 newJobListPos.splice(0, 1)
               }
             }
@@ -361,13 +362,24 @@ export class PlanerComponent implements AfterViewInit {
   pushObjectRight(side: number, job: Job_interface) {
     //szuakmy czy istniej in way object
     //jeżeli istnieje to wywłujemy  jeszcze raz na nim tym razem
-    job.job_Position_X = job.job_Position_X + side;
-    if(this.checkingIfJobIsInWay(job).length > 0) {
-      this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
-    } else {
-      return;
+      job.job_Position_X = job.job_Position_X + side;
+      if (this.checkingIfJobIsInWay(job).length > 0) {
+        if (this.checkingIfJobIsInWay(job)[0].job_lock) {
+
+          this.moveRight(side, job);
+
+            this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[1]);
+
+        }
+        else {
+          this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+        }
+
+      } else {
+        return;
+      }
     }
-  }
+
 
   checkingIfJobIsInWay(nextJob: Job_interface) {
     const newJobListPos: Job_interface[] = [];
