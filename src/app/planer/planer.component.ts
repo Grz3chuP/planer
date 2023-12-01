@@ -4,6 +4,7 @@ import {Job_interface} from "../interface/Job_interface";
 import {readData, removeData, saveChanges, saveData} from "../firebase";
 import {jobListSignal, planersListSignal} from "../store";
 import {Planer_interface} from "../interface/Planer_interface";
+import {never} from "rxjs";
 
 
 @Component({
@@ -125,43 +126,48 @@ export class PlanerComponent implements AfterViewInit {
   //dodaje animacje do kazdego zadania
   //glowny event do przesuwania zadania
   changeJobPosition(job: Job_interface, event: any) {
-
     const element = event.target as HTMLElement;
-    this.leftPosition = event.x - this.elementOffset.left + this.previousScroll;
-    // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
-    const thisJob = jobListSignal().find((item) => item.id === job.id);
-    const newX = this.leftPosition - (this.leftPosition % 10);
-    console.log('newX' + newX);
-    const newJobListPos: Job_interface[] = [];
-    jobListSignal().forEach(item => {
-      if (item.id !== thisJob!.id) {
-        if (item.job_planer_id === thisJob!.job_planer_id) {
-          if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
-            newJobListPos.push(item);
-            console.log('newJobListPos' + newJobListPos.length);
+    if(!job.job_lock) {
+      const element = event.target as HTMLElement;
+      this.leftPosition = event.x - this.elementOffset.left + this.previousScroll;
+      // this.topPosition = this.topPosition - (this.mousePositionY - pos.dropPoint.y);
+      const thisJob = jobListSignal().find((item) => item.id === job.id);
+      const newX = this.leftPosition - (this.leftPosition % 10);
+      console.log('newX' + newX);
+      const newJobListPos: Job_interface[] = [];
+      jobListSignal().forEach(item => {
+        if (item.id !== thisJob!.id) {
+          if (item.job_planer_id === thisJob!.job_planer_id) {
+            if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
+              newJobListPos.push(item);
+              console.log('newJobListPos' + newJobListPos.length);
+            }
           }
         }
+      });
+      if (newJobListPos.length === 0) {
+        thisJob!.job_Position_X = newX;
+        thisJob!.job_Position_Y = 0;
+        element.style.opacity = '1';
+        element.style.boxShadow = 'none';
+        const claculateDay = Math.floor(newX / 240);
+        const date = DateTime.fromISO(this.dataOd).plus({days: claculateDay});
+        thisJob!.job_date = date.toFormat('yyyy-MM-dd');
+        thisJob!.begin_time = newX % 240 / 10;
+        saveChanges(thisJob!);
+      } else {
+        //
+        element.style.opacity = '1';
+        element.style.boxShadow = 'none';
+        //
       }
-    });
-    if (newJobListPos.length === 0) {
-      thisJob!.job_Position_X = newX;
-      thisJob!.job_Position_Y = 0;
-      element.style.opacity = '1';
-      element.style.boxShadow = 'none';
-      const claculateDay = Math.floor(newX / 240);
-      const date = DateTime.fromISO(this.dataOd).plus({days: claculateDay});
-      thisJob!.job_date = date.toFormat('yyyy-MM-dd');
-      thisJob!.begin_time = newX % 240 / 10;
-      saveChanges(thisJob!);
-    } else {
-      //
-      element.style.opacity = '1';
-      element.style.boxShadow = 'none';
-      //
+
+      console.log(this.topPosition + ' ' + this.leftPosition);
     }
-
-    console.log(this.topPosition + ' ' + this.leftPosition);
-
+    else {
+      element.style.opacity = '1';
+      element.style.boxShadow = 'none';
+    }
   }
 
 // tu wyswietlam tylko prace dla danego planera
@@ -279,11 +285,11 @@ export class PlanerComponent implements AfterViewInit {
   }
 
   //poruszanie manualne elementami
-  moveRight(side: number) {
-    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+  moveRight(side: number, job: Job_interface) {
+    job.job_Position_X = job.job_Position_X + side;
     const newJobListPos: Job_interface[] = [];
     jobListSignal().forEach(item => {
-      if (item.id !== this.currentDragingJob!.id) {
+      if (item.id !== job.id) {
         if (item.job_planer_id === this.currentDragingJob!.job_planer_id) {
           //  if (item.job_Position_X <= newX + ((thisJob!.job_hours * 10) - 1) && item.job_Position_X + ((item.job_hours * 10) - 1) >= newX) {
           if (item.job_Position_X < this.currentDragingJob!.job_Position_X + (this.currentDragingJob!.job_hours * 10) && item.job_Position_X + (item.job_hours * 10)  > this.currentDragingJob!.job_Position_X) {
@@ -305,9 +311,8 @@ export class PlanerComponent implements AfterViewInit {
     });
   }
 
-  moveLeft(side: number) {
-
-    this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
+  moveLeft(side: number, job: Job_interface) {
+    job.job_Position_X = job.job_Position_X + side;
     const newJobListPos: Job_interface[] = [];
     jobListSignal().forEach(item => {
       if (item.id !== this.currentDragingJob!.id) {
@@ -336,41 +341,22 @@ export class PlanerComponent implements AfterViewInit {
 
   }
 
-//nie dzziala dobrze
-  pushLeft(side: number) {
-
-    let limit= 0;
-    if(limit < 4) {
-      this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
-      this.checkingIfJobIsInWay(this.currentDragingJob!).forEach((item) => {
-        item.job_Position_X += side;
-        limit++;
-        this.checkingIfJobIsInWay(item).forEach((item) => {
-          item.job_Position_X += side;
-          limit++;
-          this.checkingIfJobIsInWay(item).forEach((item) => {
-            item.job_Position_X += side;
-            limit++;
-            this.checkingIfJobIsInWay(item).forEach((item) => {
-              item.job_Position_X += side;
-              limit++;
-            });
-          });
-        });
-      });
-    }
-
-  }
 
   pushObjectLeft(side: number, job: Job_interface) {
     //szuakmy czy istniej in way object
     //jeżeli istnieje to wywłujemy  jeszcze raz na nim tym razem
-   job.job_Position_X = job.job_Position_X + side;
-    if(this.checkingIfJobIsInWay(job).length > 0) {
-      this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[0]);
-    } else {
-      return;
+    if (job.job_lock) {
+
     }
+    else {
+      job.job_Position_X = job.job_Position_X + side;
+      if(this.checkingIfJobIsInWay(job).length > 0) {
+        this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[0]);
+      } else {
+        return;
+      }
+    }
+
   }
   pushObjectRight(side: number, job: Job_interface) {
     //szuakmy czy istniej in way object
@@ -382,36 +368,6 @@ export class PlanerComponent implements AfterViewInit {
       return;
     }
   }
-
-  //nie dziala narazie
-
-  pushRight(side: number) {
-    console.log('pushRight');
-let limit = 0;
-    if(limit < 4) {
-      this.currentDragingJob!.job_Position_X = this.currentDragingJob!.job_Position_X + side;
-      this.checkingIfJobIsInWay(this.currentDragingJob!).forEach((item) => {
-        item.job_Position_X += side;
-        limit++;
-        this.checkingIfJobIsInWay(item).forEach((item) => {
-          item.job_Position_X += side;
-          limit++;
-          this.checkingIfJobIsInWay(item).forEach((item) => {
-            item.job_Position_X += side;
-            limit++;
-
-            this.checkingIfJobIsInWay(item).forEach((item) => {
-              item.job_Position_X += side;
-              limit++;
-
-            });
-          });
-        });
-      });
-    }
-  }
-
-
 
   checkingIfJobIsInWay(nextJob: Job_interface) {
     const newJobListPos: Job_interface[] = [];
@@ -427,5 +383,6 @@ let limit = 0;
     });
     return newJobListPos;
   }
+
 
 }

@@ -26,10 +26,11 @@
       <div class="border">
         <div class="jobElement"
              id="test"
-             [dndDraggable]=""
+             [dndDraggable]="!job.job_lock"
+
              *ngFor="let job of getJobsForPlaner(plan.planer_name)"
              (dndStart)="changeStyle($event)"
-             (dndEnd)="changeJobPosition(job, $event)"
+           (dndEnd)="changeJobPosition(job, $event)"
              (mousemove)="getOffset($event)"
              (dragstart)="onDragStart(job)"
              (click)="onDragStart(job)"
@@ -45,8 +46,7 @@
              'z-index': job.is_set ? '1' : '100',
               'width': (job.job_hours + job.hours_extended) * 10 + 'px'}">
           <div class="jobChecker"  >
-            x: {{job.job_Position_X}}
-            y: {{job.job_Position_Y}}
+         {{job.job_lock}}
             {{job.job_name}}
             {{job.job_date}}
             {{job.job_hours}}
