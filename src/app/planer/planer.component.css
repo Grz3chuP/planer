@@ -87,7 +87,7 @@ position: absolute;
   display: flex;
   align-items: center;
 background-color: cornsilk;
-height: 100px;
+height: 150px;
   padding: 0 10px;
   min-width: 50px;
 }
@@ -128,7 +128,7 @@ font-size: 1.2rem;
   border: #555555 dotted 2px;
 }
 .changeHours {
-  width: 100px;
+  width: 100%;
 }
 .changeHours input {
   width: 100%;
