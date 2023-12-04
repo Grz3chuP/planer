@@ -297,6 +297,7 @@ export class PlanerComponent implements AfterViewInit {
             if (!job.is_set) {
               job.hours_extended += newJobListPos[0].job_hours;
 
+            // this.pushObjectRight(side, newJobListPos[0]);
               job.is_set = true;
             }
               if (job.job_Position_X === newJobListPos[0].job_Position_X) {
@@ -388,7 +389,7 @@ export class PlanerComponent implements AfterViewInit {
         if (item.job_planer_id === nextJob.job_planer_id) {
           if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > nextJob.job_Position_X) {
             newJobListPos.push(item);
-
+console.log('newJobListPos' + newJobListPos.length + ' ' + newJobListPos[0].job_name);
           }
         }
       }
