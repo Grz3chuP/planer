@@ -295,16 +295,25 @@ export class PlanerComponent implements AfterViewInit {
           if (item.job_Position_X < job.job_Position_X + (job.job_hours * 10) && item.job_Position_X + (item.job_hours * 10)  > job.job_Position_X) {
             newJobListPos.push(item);
             if (!job.is_set) {
-              job.hours_extended += newJobListPos[0].job_hours;
-
-            // this.pushObjectRight(side, newJobListPos[0]);
-              job.is_set = true;
+              if (newJobListPos[0].job_lock) {
+                  job.hours_extended += newJobListPos[0].job_hours;
+                  console.log('pozycja' + job.job_Position_X);
+                  job.is_set = true;
+                  // if ( this.checkingIfJobIsInWay(job).length === 1 ) {
+                  //   this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+                  // }
+              }
             }
               if (job.job_Position_X === newJobListPos[0].job_Position_X) {
+                  console.log('pozycja' + job.job_Position_X);
+                  job.hours_extended -= newJobListPos[0].job_hours;
                job.job_Position_X += newJobListPos[0].job_hours * 10;
-                job.hours_extended -= newJobListPos[0].job_hours;
-                job.is_set = false;
+
+                  job.is_set = false;
                 newJobListPos.splice(0, 1)
+
+
+
               }
             }
           }
@@ -345,18 +354,33 @@ export class PlanerComponent implements AfterViewInit {
 
 
   pushObjectLeft(side: number, job: Job_interface) {
-    //szuakmy czy istniej in way object
-    //jeżeli istnieje to wywłujemy  jeszcze raz na nim tym razem
-    if (job.job_lock) {
+    job.job_Position_X = job.job_Position_X + side;
+    if (this.checkingIfJobIsInWay(job).length > 0) {
+      if (this.checkingIfJobIsInWay(job)[0].job_lock) {
+        if (!job.is_set) {
+            job.hours_extended += this.checkingIfJobIsInWay(job)[0].job_hours;
+           job.job_Position_X -= job.hours_extended * 10;
+            job.is_set = true;
 
-    }
-    else {
-      job.job_Position_X = job.job_Position_X + side;
-      if(this.checkingIfJobIsInWay(job).length > 0) {
-        this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[0]);
-      } else {
-        return;
+          }
+          if(job.job_Position_X + (( job.job_hours + job.hours_extended) * 10)  === this.checkingIfJobIsInWay(job)[0].job_Position_X + (this.checkingIfJobIsInWay(job)[0].job_hours * 10)) {
+            job.hours_extended = 0;
+            job.is_set = false;
+            if (this.checkingIfJobIsInWay(job).length > 0) {
+              this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+            }
+          }
+
+        if (this.checkingIfJobIsInWay(job).length === 2 ) {
+          this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[1]);
+        }
       }
+      else {
+        this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+      }
+
+    } else {
+      return;
     }
 
   }
@@ -366,11 +390,29 @@ export class PlanerComponent implements AfterViewInit {
       job.job_Position_X = job.job_Position_X + side;
       if (this.checkingIfJobIsInWay(job).length > 0) {
         if (this.checkingIfJobIsInWay(job)[0].job_lock) {
+            if (!job.is_set) {
 
-          this.moveRight(side, job);
+                    job.hours_extended +=this.checkingIfJobIsInWay(job)[0].job_hours;
+                    console.log('pozycja' + job.job_Position_X);
+                    job.is_set = true;
+                    // if ( this.checkingIfJobIsInWay(job).length === 1 ) {
+                    //   this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+                    // }
+            }
+            if (job.job_Position_X === this.checkingIfJobIsInWay(job)[0].job_Position_X) {
+                console.log('pozycja' + job.job_Position_X);
+                job.hours_extended -= this.checkingIfJobIsInWay(job)[0].job_hours;
+                job.job_Position_X += this.checkingIfJobIsInWay(job)[0].job_hours * 10;
+                job.is_set = false;
+              if (this.checkingIfJobIsInWay(job).length > 0) {
+                this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+              }
+               // newJobListPos.splice(0, 1)
+            }
 
-            this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[1]);
-
+          if (this.checkingIfJobIsInWay(job).length === 2 ) {
+              this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[1]);
+          }
         }
         else {
           this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
@@ -387,13 +429,14 @@ export class PlanerComponent implements AfterViewInit {
     jobListSignal().forEach(item => {
       if (item.id !== nextJob.id) {
         if (item.job_planer_id === nextJob.job_planer_id) {
-          if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > nextJob.job_Position_X) {
+          if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > nextJob.job_Position_X ) {
             newJobListPos.push(item);
-console.log('newJobListPos' + newJobListPos.length + ' ' + newJobListPos[0].job_name);
+
           }
         }
       }
     });
+    console.log('ostateczny krach' + newJobListPos);
     return newJobListPos;
   }
 
