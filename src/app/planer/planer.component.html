@@ -1,5 +1,9 @@
-<div class="planerPageWrapper position-relative">
+<div class="planerPageWrapper position-relative" xmlns:width="http://www.w3.org/1999/xhtml">
+
   <div class="datePickerWrapper d-flex gap-1">
+    <div class="zoomWrapper">
+      <input type="range" min="1" max="2" step="0.2" [(ngModel)]="zoomValue">
+    </div>
     <div class="dateFrom d-flex flex-column">
       <input type="date" [(ngModel)]="dataOd">
       {{dataOd}}
@@ -44,13 +48,11 @@
             'top': job.job_Position_Y + 'px',
              'transform': 'translate3d(0,-1px, 0)',
              'z-index': job.is_set ? '1' : '100',
-              'width': (job.job_hours + job.hours_extended) * 10 + 'px'}">
+              'width': (job.job_hours + job.hours_extended) * (10 * zoomValue) + 'px'}">
           <div class="jobChecker"  >
          {{job.job_lock}}
-            {{job.job_name}}
-            {{job.job_date}}
-            {{job.job_hours}}
-            {{job.begin_time}}
+            {{job.job_Position_X}}
+
             {{job.is_set}}
           </div>
 
@@ -60,11 +62,14 @@
 
 
       <div class="dayWrapper"
+           [ngStyle]="{'width': (240 * zoomValue) + 'px'}"
            *ngFor="let day of daysInRange; let i = index">
         {{day | date: 'dd-MM-yyyy'}}
         <div class="d-flex h-100">
 
-          <div class="hours" *ngFor="let hour of hours"></div>
+          <div class="hours"
+               [ngStyle]= "{'width': (10 * zoomValue) + 'px'}"
+               *ngFor="let hour of hours"></div>
         </div>
 
       </div>

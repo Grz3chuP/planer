@@ -49,6 +49,8 @@ export class PlanerComponent implements AfterViewInit {
   previousScroll = 0;
   scrolledDistance = 0;
 
+  //zoom menu
+  zoomValue: number = 1;
   constructor(private renderer: Renderer2, private elementRef: ElementRef) {
     const planer1: Planer_interface = {
       id: 1,
@@ -98,7 +100,7 @@ export class PlanerComponent implements AfterViewInit {
 
     });
     this.jobListFilter.forEach((item) => {
-      item.job_Position_X = 10 * item.begin_time + ((this.daysDifference(this.dataOd, item.job_date))! * 240);
+      item.job_Position_X = (10 * item.begin_time + ((this.daysDifference(this.dataOd, item.job_date))! * 240)) * this.zoomValue;
 
     });
   }
