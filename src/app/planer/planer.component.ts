@@ -455,4 +455,17 @@ export class PlanerComponent implements AfterViewInit {
   }
 
 
+  changeJobHoursDown(number: number) {
+    if (this.currentDragingJob!.job_hours === 1) {
+      return;
+    }
+    else {
+      this.currentDragingJob!.job_hours += number;
+    }
+
+  }
+
+  changeJobHoursUp(number: number) {
+    
+  }
 }

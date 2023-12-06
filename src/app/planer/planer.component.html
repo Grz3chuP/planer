@@ -90,10 +90,15 @@
         {{currentDragingJob?.is_set}}
         <div class="changeElementMenu">
           <div class="changeHours">
-            Zmień godziny:
-            <input type="number"
-                  [(ngModel)]="currentDragingJob.job_hours"
-                   >
+
+            <button
+              (click)="changeJobHoursUp( 1)"
+            > /\</button>
+            <div>{{currentDragingJob.job_hours}}</div>
+            <button
+
+              (click)="changeJobHoursDown( -1)"
+            >\/</button>
           </div>
           <div class="lockJob">
             <input type="checkbox"
