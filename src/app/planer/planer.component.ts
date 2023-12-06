@@ -369,16 +369,16 @@ export class PlanerComponent implements AfterViewInit {
             job.hours_extended = 0;
             job.is_set = false;
             if (this.checkingIfJobIsInWay(job).length > 0) {
-              this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+              this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[0]);
             }
           }
 
         if (this.checkingIfJobIsInWay(job).length === 2 ) {
-          this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[1]);
+          this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[1]);
         }
       }
       else {
-        this.pushObjectRight(side, this.checkingIfJobIsInWay(job)[0]);
+        this.pushObjectLeft(side, this.checkingIfJobIsInWay(job)[0]);
       }
 
     } else {
@@ -431,7 +431,7 @@ export class PlanerComponent implements AfterViewInit {
     jobListSignal().forEach(item => {
       if (item.id !== nextJob.id) {
         if (item.job_planer_id === nextJob.job_planer_id) {
-          if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + (item.job_hours * 10) > nextJob.job_Position_X ) {
+          if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + ((item.job_hours + item.hours_extended) * 10) > nextJob.job_Position_X ) {
             newJobListPos.push(item);
 
           }
@@ -439,6 +439,18 @@ export class PlanerComponent implements AfterViewInit {
       }
     });
     console.log('ostateczny krach' + newJobListPos);
+    // Sortowanie według flagi is_lock, aby obiekt z is_lock = true był pierwszy
+    newJobListPos.sort((a, b) => {
+      if (a.job_lock && !b.job_lock) {
+        return -1; // a powinno być przed b
+      } else if (!a.job_lock && b.job_lock) {
+        return 1; // b powinno być przed a
+      } else {
+        return 0; // zachowanie istniejącej kolejności dla obiektów, które mają tę samą flagę is_lock
+      }
+    });
+
+
     return newJobListPos;
   }
 
