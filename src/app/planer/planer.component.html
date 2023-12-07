@@ -36,10 +36,10 @@
              (dndStart)="changeStyle($event)"
            (dndEnd)="changeJobPosition(job, $event)"
              (mousemove)="getOffset($event)"
-             (dragstart)="onDragStart(job)"
-             (click)="onDragStart(job)"
+             (dragstart)="onDragStart($event, job)"
+             (click)="onDragStart($event, job)"
              [class]="{
-             'lockJob': job.job_lock,
+             'lockJob' : job.job_lock,
              'sharingJob': job.is_set,
              'pickedJob': job.id === currentDragingJob?.id
 
@@ -50,10 +50,9 @@
              'z-index': job.is_set ? '1' : '100',
               'width': (job.job_hours + job.hours_extended) * (10 * zoomValue) + 'px'}">
           <div class="jobChecker"  >
-         {{job.job_lock}}
-            {{job.job_Position_X}}
-
-            {{job.is_set}}
+            <div class="jobNameDescription">{{job.job_name}}</div>
+            <div class="jobDescription">{{job.id}}</div>
+            <div class="jobHoursDescription fw-bold px-1">{{job.job_hours}}h</div>
           </div>
 
 
@@ -79,7 +78,13 @@
 
 <!--zapisywanie nowej pracy-->
   <div class="createJobWrapper">
-    <div class="currentElement" >
+    <div class="currentElement"
+         *ngIf="currentDragingJob"
+         [ngStyle]="{'left': currentJobRefrence.x + 'px', 'top': (currentJobRefrence.y + 40) + 'px'}"
+    >
+      <div (click)="openMenuPanel()"
+        class="closeMenuPanel">X</div>
+
       <button class="pushLeft" (click)="pushObjectLeft(-10, currentDragingJob!)"><|</button>
 <!--      <button class="pushLeft" (click)="moveLeft(-10)"><</button>-->
 
@@ -100,12 +105,13 @@
               (click)="changeJobHoursDown( -1)"
             >\/</button>
           </div>
-          <div class="lockJob">
+          <div class="lockJobCheckbox">
             <input type="checkbox"
                    [(ngModel)]="currentDragingJob.job_lock">
           </div>
         </div>
       </div>
+
 <!--     <button class="pushLeft" (click)="moveRight(10)">></button>-->
       <button class="pushLeft" (click)="pushObjectRight(10, currentDragingJob!)">|></button>
     </div>

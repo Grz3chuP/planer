@@ -15,7 +15,8 @@ import {never} from "rxjs";
 })
 
 export class PlanerComponent implements AfterViewInit {
-
+  currentJobRefrence: {x: number, y: number} = {x: 0, y: 0};
+  //obecnie przeciagane zadanie
   currentDragingJob: Job_interface | undefined;
   //wybrane zadania do wyswietlenia w tej dacie
   jobListFilter: Job_interface[] = [];
@@ -235,8 +236,13 @@ export class PlanerComponent implements AfterViewInit {
 
   }
 
-  onDragStart(job: Job_interface) {
+  onDragStart(event:  any, job: Job_interface) {
     this.currentDragingJob = jobListSignal().find((item) => item.id === job.id);
+    const element = event.target as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    this.currentJobRefrence.x = rect.left;
+    this.currentJobRefrence.y = rect.top;
+    console.log(element);
 
   }
 
@@ -287,6 +293,7 @@ export class PlanerComponent implements AfterViewInit {
   }
 
   //poruszanie manualne elementami
+
   moveRight(side: number, job: Job_interface) {
    // job.job_Position_X = job.job_Position_X + side;
     const newJobListPos: Job_interface[] = [];
@@ -466,6 +473,13 @@ export class PlanerComponent implements AfterViewInit {
   }
 
   changeJobHoursUp(number: number) {
-    
+    this.currentDragingJob!.job_hours += number;
+    if (this.checkingIfJobIsInWay(this.currentDragingJob!).length > 0) {
+      this.pushObjectRight(10, this.checkingIfJobIsInWay(this.currentDragingJob!)[0]);
+    }
+  }
+
+  openMenuPanel() {
+    this.currentDragingJob = undefined;
   }
 }
