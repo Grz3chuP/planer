@@ -432,7 +432,7 @@ export class PlanerComponent implements AfterViewInit {
       }
     }
 
-
+// strawdzam czy obiekt zawiera inne i dodaje go do listy
   checkingIfJobIsInWay(nextJob: Job_interface) {
     const newJobListPos: Job_interface[] = [];
     jobListSignal().forEach(item => {
@@ -482,4 +482,34 @@ export class PlanerComponent implements AfterViewInit {
   openMenuPanel() {
     this.currentDragingJob = undefined;
   }
+
+// tu chce sprawdzac i blokowac przesuwanie
+  checkingIfJobIsInWayAndBlockMove(nextJob: Job_interface, side: number) {
+    const newJobListPos: Job_interface[] = [];
+    jobListSignal().forEach(item => {
+      if (item.id !== nextJob.id) {
+        if (item.job_planer_id === nextJob.job_planer_id) {
+          if (item.job_Position_X < nextJob.job_Position_X + ((nextJob.job_hours + nextJob.hours_extended) * 10) && item.job_Position_X + ((item.job_hours + item.hours_extended) * 10) > nextJob.job_Position_X ) {
+            newJobListPos.push(item);
+
+          }
+        }
+      }
+    });
+    console.log('ostateczny krach' + newJobListPos);
+    // Sortowanie według flagi is_lock, aby obiekt z is_lock = true był pierwszy
+    newJobListPos.sort((a, b) => {
+      if (a.job_lock && !b.job_lock) {
+        return -1; // a powinno być przed b
+      } else if (!a.job_lock && b.job_lock) {
+        return 1; // b powinno być przed a
+      } else {
+        return 0; // zachowanie istniejącej kolejności dla obiektów, które mają tę samą flagę is_lock
+      }
+    });
+
+
+    return newJobListPos;
+  }
+
 }
